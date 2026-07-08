@@ -3,13 +3,11 @@
 @tailwind utilities;
 
 :root {
-  --cream: #faf7f2;
-  --sand: #f5e6c3;
-  --ink: #2c2c2c;
-  --accent: #8b7355;
-  --secondary: #d4c5a9;
-  --olive: #6b7c5c;
-  --grass: #3f8b43;
+  --cream: #fff2c9;
+  --ink: #111111;
+  --flavor-blue: #6bb6d6;
+  --flavor-green: #6bbf7a;
+  --flavor-orange: #c98452;
 }
 
 html {
@@ -35,17 +33,16 @@ h4,
   .btn {
     @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 font-semibold transition-all duration-200 active:scale-95;
   }
-  /* Dark pill \u2014 the primary CTA style in the reference (ORDER NOW / BUY NOW) */
+  /* Dark pill \u2014 primary CTA (Order Now / Buy Now) */
   .btn-primary {
-    @apply btn bg-ink text-white shadow-pill hover:-translate-y-0.5 hover:shadow-hover;
+    @apply btn bg-ink text-white shadow-pill hover:-translate-y-0.5 hover:scale-105 hover:shadow-hover;
   }
-  /* Soft cream pill with subtle border */
+  /* White pill */
   .btn-outline {
     @apply btn border border-ink/10 bg-white text-ink hover:-translate-y-0.5 hover:shadow-soft;
   }
-  /* Grass green pill (FAQ / accents) */
   .btn-grass {
-    @apply btn bg-grass text-white shadow-pill hover:-translate-y-0.5 hover:bg-grass-dark;
+    @apply btn bg-flavor-green text-white shadow-pill hover:-translate-y-0.5 hover:bg-grass-dark;
   }
   .input {
     @apply w-full rounded-2xl border border-secondary bg-white px-4 py-3 text-ink outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20;
@@ -64,6 +61,20 @@ h4,
   }
 }
 
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 10px;
@@ -72,11 +83,10 @@ h4,
   background: var(--cream);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--secondary);
+  background: var(--flavor-orange);
   border-radius: 8px;
 }
 
-/* Hide scrollbar for horizontal carousels */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

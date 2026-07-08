@@ -5,63 +5,50 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const faqs = [
   {
-    icon: "\u{1F366}",
+    icon: "\u{1F368}",
     q: "What makes your ice cream different?",
     a: "We use real tropical fruits, fresh dairy, and zero artificial flavours. Every batch is handcrafted in small quantities to maintain quality.",
   },
   {
     icon: "\u{1F69A}",
     q: "Do you offer home delivery?",
-    a: "Yes \u2014 we deliver across all our zones in insulated packaging so your ice cream arrives perfectly frozen.",
+    a: "Yes \u2014 we deliver within 24 hours in insulated packaging to keep every pint at the perfect temperature.",
   },
   {
     icon: "\u{1F33F}",
     q: "Is your ice cream vegan or dairy-free?",
-    a: "We offer a growing range of vegan and dairy-free scoops made with coconut and oat bases.",
+    a: "Several of our flavors have a fully vegan oat-milk variant. Look for the leaf badge on the tub.",
   },
   {
     icon: "\u{1F382}",
     q: "Can I order in bulk for events/parties?",
-    a: "Absolutely. Contact us for bulk and event pricing \u2014 we cater parties of any size.",
+    a: "Absolutely. Contact us at least 5 days ahead for custom flavor selections and event pricing.",
   },
 ];
 
 export function Faq() {
   const [open, setOpen] = useState(0);
   return (
-    <section className="bg-sand px-4 py-16">
-      <div className="mx-auto max-w-6xl overflow-hidden rounded-[2.5rem] bg-grass p-8 text-white shadow-hover md:p-12">
-        <div className="grid gap-8 md:grid-cols-2">
-          <div>
+    <section className="bg-cream pb-24 pt-4">
+      <div className="mx-auto max-w-7xl px-6 md:px-12">
+        <div className="grid grid-cols-1 gap-8 rounded-[2.5rem] bg-flavor-green p-8 shadow-lg md:grid-cols-[1fr_1.6fr] md:p-14">
+          <div className="text-white">
             <h2 className="font-heading text-4xl font-bold md:text-5xl">
               FAQ&apos;s
             </h2>
-            <p className="mt-4 max-w-sm text-white/80">
+            <p className="mt-4 max-w-xs text-sm text-white/85">
               We&apos;ve answered the most common questions to make your
               experience as smooth as our ice cream.
             </p>
-            <div className="mt-6 flex gap-2">
-              {["IG", "X", "in"].map((s) => (
-                <span
-                  key={s}
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-xs font-semibold"
-                >
-                  {s}
-                </span>
-              ))}
-            </div>
           </div>
           <div className="space-y-3">
             {faqs.map((f, idx) => {
               const active = open === idx;
               return (
-                <div
-                  key={f.q}
-                  className="overflow-hidden rounded-2xl bg-grass-soft/90 text-ink"
-                >
+                <div key={f.q}>
                   <button
                     onClick={() => setOpen(active ? -1 : idx)}
-                    className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left font-semibold"
+                    className="flex w-full items-center justify-between gap-4 rounded-full bg-green-soft px-6 py-4 text-left text-sm font-semibold text-[#1f3d24] transition hover:brightness-95"
                   >
                     <span className="flex items-center gap-2">
                       <span>{f.icon}</span>
@@ -69,7 +56,7 @@ export function Faq() {
                     </span>
                     <motion.span
                       animate={{ rotate: active ? 90 : 0 }}
-                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white text-ink"
+                      className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white text-[#1f3d24]"
                     >
                       →
                     </motion.span>
@@ -80,10 +67,12 @@ export function Faq() {
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="bg-white/70"
+                        transition={{ duration: 0.25 }}
+                        className="overflow-hidden"
                       >
-                        <p className="px-5 py-4 text-sm text-ink/80">{f.a}</p>
+                        <p className="mt-2 rounded-2xl bg-white/95 px-6 py-4 text-sm text-neutral-700">
+                          {f.a}
+                        </p>
                       </motion.div>
                     ) : null}
                   </AnimatePresence>

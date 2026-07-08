@@ -23,7 +23,7 @@ export function Mission() {
         {[...Array(6)].map((_, n) => (
           <span
             key={n}
-            className="absolute h-3 w-3 animate-float rounded-full bg-secondary/60"
+            className="absolute h-3 w-3 animate-float rounded-full bg-flavor-orange/40"
             style={{
               left: `${12 + n * 14}%`,
               top: `${18 + (n % 3) * 24}%`,
@@ -41,7 +41,7 @@ export function Mission() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
-              className="font-heading text-2xl font-semibold leading-snug text-accent md:text-4xl"
+              className="font-heading text-2xl font-semibold leading-snug text-flavor-orange md:text-4xl"
             >
               {lines[i]}
             </motion.h2>
