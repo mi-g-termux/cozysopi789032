@@ -1,7 +1,4 @@
 import { notFound } from "next/navigation";
-
-// Always render fresh so product edits appear live via router.refresh().
-export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/prisma";
 import { ProductDetail } from "./ProductDetail";
 import type { ProductDTO } from "@/types";

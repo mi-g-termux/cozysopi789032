@@ -1,7 +1,4 @@
 import Link from "next/link";
-
-// Always render fresh so order-status changes appear live via router.refresh().
-export const dynamic = "force-dynamic";
 import { redirect } from "next/navigation";
 import { auth, signOut } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
