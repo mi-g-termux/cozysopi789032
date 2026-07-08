@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminLayout({
   children,
-  params
+  params,
 }: {
   children: React.ReactNode;
   params: { adminPath: string };
@@ -28,7 +28,7 @@ export default async function AdminLayout({
     { href: `${base}/delivery-zones`, label: "Delivery Zones" },
     { href: `${base}/customers`, label: "Customers" },
     { href: `${base}/settings`, label: "Settings" },
-    { href: `${base}/change-password`, label: "Change Password" }
+    { href: `${base}/change-password`, label: "Change Password" },
   ];
 
   return (
@@ -38,7 +38,11 @@ export default async function AdminLayout({
           <p className="px-3 py-2 font-heading text-lg text-accent">Admin</p>
           <nav className="space-y-1">
             {nav.map((n) => (
-              <Link key={n.href} href={n.href} className="block rounded-lg px-3 py-2 text-sm hover:bg-secondary/40">
+              <Link
+                key={n.href}
+                href={n.href}
+                className="block rounded-lg px-3 py-2 text-sm hover:bg-secondary/40"
+              >
                 {n.label}
               </Link>
             ))}

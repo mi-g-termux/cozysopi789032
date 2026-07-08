@@ -7,7 +7,7 @@ import { useInView } from "framer-motion";
 export function Counter({
   to,
   suffix = "",
-  duration = 1500
+  duration = 1500,
 }: {
   to: number;
   suffix?: string;

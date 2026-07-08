@@ -10,19 +10,25 @@ export async function POST(req: Request) {
 
   const body = await req.json().catch(() => null);
   const parsed = changePasswordSchema.safeParse(body);
-  if (!parsed.success) return Errors.VALIDATION(parsed.error.issues[0]?.message);
+  if (!parsed.success)
+    return Errors.VALIDATION(parsed.error.issues[0]?.message);
 
-  const user = await prisma.user.findUnique({ where: { id: (admin as { id: string }).id } });
+  const user = await prisma.user.findUnique({
+    where: { id: (admin as { id: string }).id },
+  });
   if (!user) return Errors.NOT_FOUND();
 
-  const valid = await bcrypt.compare(parsed.data.currentPassword, user.password);
+  const valid = await bcrypt.compare(
+    parsed.data.currentPassword,
+    user.password,
+  );
   if (!valid) return Errors.VALIDATION("Current password is incorrect.");
 
   const hashed = await bcrypt.hash(parsed.data.newPassword, 12);
   await prisma.$transaction([
     prisma.user.update({ where: { id: user.id }, data: { password: hashed } }),
     // Revoke all other sessions on password change.
-    prisma.userSession.deleteMany({ where: { userId: user.id } })
+    prisma.userSession.deleteMany({ where: { userId: user.id } }),
   ]);
   return ok({ message: "Password changed. Please sign in again." });
 }

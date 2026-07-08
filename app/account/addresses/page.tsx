@@ -11,7 +11,7 @@ export default async function AddressesPage() {
   if (!session?.user) redirect("/login?from=/account/addresses");
   const addresses = (await prisma.address.findMany({
     where: { userId: session.user.id },
-    orderBy: { isDefault: "desc" }
+    orderBy: { isDefault: "desc" },
   })) as AddressDTO[];
   return <AddressesClient initial={addresses} />;
 }

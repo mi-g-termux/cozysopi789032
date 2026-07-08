@@ -25,7 +25,7 @@ function LoginForm() {
       password,
       remember: String(remember),
       totp,
-      redirect: false
+      redirect: false,
     });
     setLoading(false);
     if (res?.error) {
@@ -52,23 +52,47 @@ function LoginForm() {
           <form onSubmit={onSubmit} className="mt-6 space-y-4">
             <div>
               <label className="label">Email</label>
-              <input className="input" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+              <input
+                className="input"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
             <div>
               <label className="label">Password</label>
-              <input className="input" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+              <input
+                className="input"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
             {needs2fa ? (
               <div>
                 <label className="label">2FA code</label>
-                <input className="input tracking-widest" inputMode="numeric" value={totp} onChange={(e) => setTotp(e.target.value)} />
+                <input
+                  className="input tracking-widest"
+                  inputMode="numeric"
+                  value={totp}
+                  onChange={(e) => setTotp(e.target.value)}
+                />
               </div>
             ) : null}
             <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
+              <input
+                type="checkbox"
+                checked={remember}
+                onChange={(e) => setRemember(e.target.checked)}
+              />
               Keep me logged in
             </label>
-            <button disabled={loading} className="btn-primary w-full disabled:opacity-60">
+            <button
+              disabled={loading}
+              className="btn-primary w-full disabled:opacity-60"
+            >
               {loading ? "Signing in..." : "Sign in"}
             </button>
           </form>
@@ -81,8 +105,15 @@ function LoginForm() {
           </button>
 
           <div className="mt-4 flex justify-between text-sm">
-            <Link href="/forgot-password" className="text-accent hover:underline">Forgot password?</Link>
-            <Link href="/register" className="text-accent hover:underline">Create account</Link>
+            <Link
+              href="/forgot-password"
+              className="text-accent hover:underline"
+            >
+              Forgot password?
+            </Link>
+            <Link href="/register" className="text-accent hover:underline">
+              Create account
+            </Link>
           </div>
         </div>
       </div>
@@ -91,7 +122,8 @@ function LoginForm() {
 }
 
 function friendly(error: string): string {
-  if (error.includes("CredentialsSignin")) return "Incorrect email or password.";
+  if (error.includes("CredentialsSignin"))
+    return "Incorrect email or password.";
   return "Incorrect email or password.";
 }
 

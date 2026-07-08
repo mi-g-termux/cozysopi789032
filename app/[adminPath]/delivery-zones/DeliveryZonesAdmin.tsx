@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { formatCurrency } from "@/lib/utils";
 import type { DeliveryZoneDTO } from "@/types";
@@ -21,11 +21,18 @@ const emptyDraft: Draft = {
   charge: 0,
   estimatedDays: "1-2 days",
   freeAbove: "",
-  active: true
+  active: true,
 };
 
-export function DeliveryZonesAdmin({ initial }: { initial: DeliveryZoneDTO[] }) {
+export function DeliveryZonesAdmin({
+  initial,
+}: {
+  initial: DeliveryZoneDTO[];
+}) {
   const [zones, setZones] = useState<DeliveryZoneDTO[]>(initial);
+
+  // Absorb server-refreshed data pushed by the realtime layer (live sync).
+  useEffect(() => setZones(initial), [initial]);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [saving, setSaving] = useState(false);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
@@ -41,13 +48,16 @@ export function DeliveryZonesAdmin({ initial }: { initial: DeliveryZoneDTO[] }) 
       charge: z.charge,
       estimatedDays: z.estimatedDays,
       freeAbove: z.freeAbove?.toString() ?? "",
-      active: z.active
+      active: z.active,
     });
   }
 
   async function save() {
     if (!draft) return;
-    const areas = draft.areasText.split(",").map((a) => a.trim()).filter(Boolean);
+    const areas = draft.areasText
+      .split(",")
+      .map((a) => a.trim())
+      .filter(Boolean);
     if (!draft.name || areas.length === 0) {
       toast.error("Zone name and at least one area are required.");
       return;
@@ -60,21 +70,24 @@ export function DeliveryZonesAdmin({ initial }: { initial: DeliveryZoneDTO[] }) 
         charge: Number(draft.charge),
         estimatedDays: draft.estimatedDays,
         freeAbove: draft.freeAbove === "" ? null : Number(draft.freeAbove),
-        active: draft.active
+        active: draft.active,
       };
-      const url = draft.id ? `/api/admin/delivery-zones/${draft.id}` : "/api/admin/delivery-zones";
+      const url = draft.id
+        ? `/api/admin/delivery-zones/${draft.id}`
+        : "/api/admin/delivery-zones";
       const method = draft.id ? "PUT" : "POST";
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
       const json = await res.json();
       if (!json.success) {
         toast.error(json.error ?? "Could not save zone.");
         return;
       }
-      if (draft.id) setZones((zs) => zs.map((z) => (z.id === draft.id ? json.data : z)));
+      if (draft.id)
+        setZones((zs) => zs.map((z) => (z.id === draft.id ? json.data : z)));
       else setZones((zs) => [...zs, json.data]);
       toast.success("Zone saved");
       setDraft(null);
@@ -85,7 +98,9 @@ export function DeliveryZonesAdmin({ initial }: { initial: DeliveryZoneDTO[] }) 
 
   async function remove(id: string) {
     if (!confirm("Delete this zone?")) return;
-    const res = await fetch(`/api/admin/delivery-zones/${id}`, { method: "DELETE" });
+    const res = await fetch(`/api/admin/delivery-zones/${id}`, {
+      method: "DELETE",
+    });
     const json = await res.json();
     if (json.success) {
       setZones((zs) => zs.filter((z) => z.id !== id));
@@ -98,7 +113,7 @@ export function DeliveryZonesAdmin({ initial }: { initial: DeliveryZoneDTO[] }) 
     await fetch("/api/admin/delivery-zones/reorder", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ids: next.map((z) => z.id) })
+      body: JSON.stringify({ ids: next.map((z) => z.id) }),
     });
   }
 
@@ -111,13 +126,16 @@ export function DeliveryZonesAdmin({ initial }: { initial: DeliveryZoneDTO[] }) 
     persistOrder(next);
   }
 
-  const upd = (patch: Partial<Draft>) => setDraft((d) => (d ? { ...d, ...patch } : d));
+  const upd = (patch: Partial<Draft>) =>
+    setDraft((d) => (d ? { ...d, ...patch } : d));
 
   return (
     <div>
       <div className="flex items-center justify-between">
         <h1 className="font-heading text-3xl">Delivery zones</h1>
-        <button onClick={openNew} className="btn-primary text-sm">Add zone</button>
+        <button onClick={openNew} className="btn-primary text-sm">
+          Add zone
+        </button>
       </div>
       <p className="mt-1 text-sm text-ink/60">Drag rows to reorder.</p>
 
@@ -148,11 +166,23 @@ export function DeliveryZonesAdmin({ initial }: { initial: DeliveryZoneDTO[] }) 
                 <td className="p-3 text-ink/70">{z.areas.join(", ")}</td>
                 <td className="p-3">{formatCurrency(z.charge)}</td>
                 <td className="p-3">{z.estimatedDays}</td>
-                <td className="p-3">{z.freeAbove != null ? formatCurrency(z.freeAbove) : "\u2014"}</td>
+                <td className="p-3">
+                  {z.freeAbove != null ? formatCurrency(z.freeAbove) : "\u2014"}
+                </td>
                 <td className="p-3">{z.active ? "Yes" : "No"}</td>
                 <td className="p-3 text-right">
-                  <button onClick={() => openEdit(z)} className="text-accent hover:underline">Edit</button>
-                  <button onClick={() => remove(z.id)} className="ml-3 text-red-500 hover:underline">Delete</button>
+                  <button
+                    onClick={() => openEdit(z)}
+                    className="text-accent hover:underline"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => remove(z.id)}
+                    className="ml-3 text-red-500 hover:underline"
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
@@ -164,38 +194,80 @@ export function DeliveryZonesAdmin({ initial }: { initial: DeliveryZoneDTO[] }) 
         <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-ink/40 p-4">
           <div className="card my-8 w-full max-w-lg p-6">
             <div className="flex items-center justify-between">
-              <h2 className="font-heading text-2xl">{draft.id ? "Edit" : "New"} zone</h2>
-              <button onClick={() => setDraft(null)} className="text-2xl">&times;</button>
+              <h2 className="font-heading text-2xl">
+                {draft.id ? "Edit" : "New"} zone
+              </h2>
+              <button onClick={() => setDraft(null)} className="text-2xl">
+                &times;
+              </button>
             </div>
             <div className="mt-4 space-y-4">
               <div>
                 <label className="label">Zone name</label>
-                <input className="input" value={draft.name} onChange={(e) => upd({ name: e.target.value })} />
+                <input
+                  className="input"
+                  value={draft.name}
+                  onChange={(e) => upd({ name: e.target.value })}
+                />
               </div>
               <div>
                 <label className="label">Areas (comma separated)</label>
-                <input className="input" placeholder="Downtown, City Square, Main Street" value={draft.areasText} onChange={(e) => upd({ areasText: e.target.value })} />
+                <input
+                  className="input"
+                  placeholder="Downtown, City Square, Main Street"
+                  value={draft.areasText}
+                  onChange={(e) => upd({ areasText: e.target.value })}
+                />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="label">Delivery charge</label>
-                  <input className="input" type="number" step="0.01" value={draft.charge} onChange={(e) => upd({ charge: Number(e.target.value) })} />
+                  <input
+                    className="input"
+                    type="number"
+                    step="0.01"
+                    value={draft.charge}
+                    onChange={(e) => upd({ charge: Number(e.target.value) })}
+                  />
                 </div>
                 <div>
                   <label className="label">Estimated delivery</label>
-                  <input className="input" value={draft.estimatedDays} onChange={(e) => upd({ estimatedDays: e.target.value })} />
+                  <input
+                    className="input"
+                    value={draft.estimatedDays}
+                    onChange={(e) => upd({ estimatedDays: e.target.value })}
+                  />
                 </div>
               </div>
               <div>
-                <label className="label">Free delivery if order above (optional)</label>
-                <input className="input" type="number" step="0.01" value={draft.freeAbove} onChange={(e) => upd({ freeAbove: e.target.value })} />
+                <label className="label">
+                  Free delivery if order above (optional)
+                </label>
+                <input
+                  className="input"
+                  type="number"
+                  step="0.01"
+                  value={draft.freeAbove}
+                  onChange={(e) => upd({ freeAbove: e.target.value })}
+                />
               </div>
               <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={draft.active} onChange={(e) => upd({ active: e.target.checked })} /> Active
+                <input
+                  type="checkbox"
+                  checked={draft.active}
+                  onChange={(e) => upd({ active: e.target.checked })}
+                />{" "}
+                Active
               </label>
               <div className="flex justify-end gap-3">
-                <button onClick={() => setDraft(null)} className="btn-outline">Cancel</button>
-                <button onClick={save} disabled={saving} className="btn-primary disabled:opacity-60">
+                <button onClick={() => setDraft(null)} className="btn-outline">
+                  Cancel
+                </button>
+                <button
+                  onClick={save}
+                  disabled={saving}
+                  className="btn-primary disabled:opacity-60"
+                >
                   {saving ? "Saving..." : "Save zone"}
                 </button>
               </div>

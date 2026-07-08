@@ -12,7 +12,7 @@ export default async function AdminSettingsPage() {
     currencySymbol: s.currencySymbol,
     stripeSecretKey: s.stripeSecretKey,
     paypalClientId: s.paypalClientId,
-    freeDeliveryAbove: s.freeDeliveryAbove
+    freeDeliveryAbove: s.freeDeliveryAbove,
   };
   return <SettingsAdmin initial={initial} />;
 }

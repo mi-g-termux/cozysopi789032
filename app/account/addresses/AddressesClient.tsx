@@ -12,7 +12,7 @@ const empty: AddressDTO = {
   area: "",
   city: "",
   postalCode: "",
-  isDefault: false
+  isDefault: false,
 };
 
 export function AddressesClient({ initial }: { initial: AddressDTO[] }) {
@@ -27,7 +27,7 @@ export function AddressesClient({ initial }: { initial: AddressDTO[] }) {
       const res = await fetch("/api/account/addresses", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form)
+        body: JSON.stringify(form),
       });
       const json = await res.json();
       if (!json.success) {
@@ -44,7 +44,9 @@ export function AddressesClient({ initial }: { initial: AddressDTO[] }) {
 
   async function remove(id?: string) {
     if (!id) return;
-    const res = await fetch(`/api/account/addresses/${id}`, { method: "DELETE" });
+    const res = await fetch(`/api/account/addresses/${id}`, {
+      method: "DELETE",
+    });
     const json = await res.json();
     if (json.success) {
       setAddresses((a) => a.filter((x) => x.id !== id));
@@ -52,8 +54,9 @@ export function AddressesClient({ initial }: { initial: AddressDTO[] }) {
     }
   }
 
-  const set = (k: keyof AddressDTO) => (e: React.ChangeEvent<HTMLInputElement>) =>
-    setForm((f) => ({ ...f, [k]: e.target.value }));
+  const set =
+    (k: keyof AddressDTO) => (e: React.ChangeEvent<HTMLInputElement>) =>
+      setForm((f) => ({ ...f, [k]: e.target.value }));
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-16">
@@ -64,11 +67,22 @@ export function AddressesClient({ initial }: { initial: AddressDTO[] }) {
           <div key={a.id} className="card p-5">
             <div className="flex items-center justify-between">
               <span className="font-semibold">{a.label}</span>
-              {a.isDefault ? <span className="text-xs text-olive">Default</span> : null}
+              {a.isDefault ? (
+                <span className="text-xs text-olive">Default</span>
+              ) : null}
             </div>
-            <p className="mt-2 text-sm text-ink/70">{a.fullName} \u00B7 {a.phone}</p>
-            <p className="text-sm text-ink/70">{a.street}, {a.area}, {a.city} {a.postalCode}</p>
-            <button onClick={() => remove(a.id)} className="mt-3 text-sm text-accent hover:underline">Delete</button>
+            <p className="mt-2 text-sm text-ink/70">
+              {a.fullName} \u00B7 {a.phone}
+            </p>
+            <p className="text-sm text-ink/70">
+              {a.street}, {a.area}, {a.city} {a.postalCode}
+            </p>
+            <button
+              onClick={() => remove(a.id)}
+              className="mt-3 text-sm text-accent hover:underline"
+            >
+              Delete
+            </button>
           </div>
         ))}
       </div>
@@ -76,16 +90,62 @@ export function AddressesClient({ initial }: { initial: AddressDTO[] }) {
       <form onSubmit={save} className="card mt-8 space-y-4 p-6">
         <h2 className="font-heading text-xl">Add a new address</h2>
         <div className="grid grid-cols-2 gap-4">
-          <input className="input" placeholder="Label" value={form.label} onChange={set("label")} />
-          <input className="input" placeholder="Full name" value={form.fullName} onChange={set("fullName")} required />
-          <input className="input" placeholder="Phone" value={form.phone} onChange={set("phone")} required />
-          <input className="input" placeholder="Area" value={form.area} onChange={set("area")} required />
-          <input className="input" placeholder="Street" value={form.street} onChange={set("street")} required />
-          <input className="input" placeholder="City" value={form.city} onChange={set("city")} required />
-          <input className="input" placeholder="Postal code" value={form.postalCode ?? ""} onChange={set("postalCode")} />
+          <input
+            className="input"
+            placeholder="Label"
+            value={form.label}
+            onChange={set("label")}
+          />
+          <input
+            className="input"
+            placeholder="Full name"
+            value={form.fullName}
+            onChange={set("fullName")}
+            required
+          />
+          <input
+            className="input"
+            placeholder="Phone"
+            value={form.phone}
+            onChange={set("phone")}
+            required
+          />
+          <input
+            className="input"
+            placeholder="Area"
+            value={form.area}
+            onChange={set("area")}
+            required
+          />
+          <input
+            className="input"
+            placeholder="Street"
+            value={form.street}
+            onChange={set("street")}
+            required
+          />
+          <input
+            className="input"
+            placeholder="City"
+            value={form.city}
+            onChange={set("city")}
+            required
+          />
+          <input
+            className="input"
+            placeholder="Postal code"
+            value={form.postalCode ?? ""}
+            onChange={set("postalCode")}
+          />
         </div>
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={!!form.isDefault} onChange={(e) => setForm((f) => ({ ...f, isDefault: e.target.checked }))} />
+          <input
+            type="checkbox"
+            checked={!!form.isDefault}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, isDefault: e.target.checked }))
+            }
+          />
           Set as default
         </label>
         <button disabled={saving} className="btn-primary disabled:opacity-60">

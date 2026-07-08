@@ -11,9 +11,9 @@ function SuccessInner() {
   return (
     <div className="mx-auto max-w-lg px-4 py-24 text-center">
       <motion.div
-        initial={ { scale: 0 } }
-        animate={ { scale: 1 } }
-        transition={ { type: "spring", stiffness: 200, damping: 12 } }
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: "spring", stiffness: 200, damping: 12 }}
         className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-olive text-4xl text-white"
       >
         \u2713
@@ -22,10 +22,16 @@ function SuccessInner() {
       <p className="mt-2 text-ink/70">
         Thank you for your order. We&apos;ve emailed your confirmation.
       </p>
-      {ref ? <p className="mt-1 text-sm text-ink/50">Reference: {ref}</p> : null}
+      {ref ? (
+        <p className="mt-1 text-sm text-ink/50">Reference: {ref}</p>
+      ) : null}
       <div className="mt-8 flex justify-center gap-4">
-        <Link href="/shop" className="btn-primary">Continue shopping</Link>
-        <Link href="/account" className="btn-outline">View orders</Link>
+        <Link href="/shop" className="btn-primary">
+          Continue shopping
+        </Link>
+        <Link href="/account" className="btn-outline">
+          View orders
+        </Link>
       </div>
     </div>
   );

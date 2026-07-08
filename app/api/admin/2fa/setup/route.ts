@@ -11,13 +11,15 @@ export async function POST() {
   if (!admin) return Errors.FORBIDDEN();
   const user = admin as { id: string; email: string };
 
-  const secret = speakeasy.generateSecret({ name: `Cozy Bites (${user.email})` });
+  const secret = speakeasy.generateSecret({
+    name: `Cozy Bites (${user.email})`,
+  });
   const backupCodes = generateBackupCodes();
   const qr = await QRCode.toDataURL(secret.otpauth_url ?? "");
 
   await prisma.user.update({
     where: { id: user.id },
-    data: { twoFactorSecret: secret.base32, backupCodes }
+    data: { twoFactorSecret: secret.base32, backupCodes },
   });
 
   return ok({ qr, secret: secret.base32, backupCodes });

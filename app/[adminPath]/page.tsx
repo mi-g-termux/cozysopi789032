@@ -5,19 +5,23 @@ import { AdminRealtime } from "@/components/admin/AdminRealtime";
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
-  const [orders, productCount, customerCount, revenueAgg, recent] = await Promise.all([
-    prisma.order.count(),
-    prisma.product.count(),
-    prisma.user.count({ where: { role: "customer" } }),
-    prisma.order.aggregate({ _sum: { total: true }, where: { paymentStatus: "paid" } }),
-    prisma.order.findMany({ take: 8, orderBy: { createdAt: "desc" } })
-  ]);
+  const [orders, productCount, customerCount, revenueAgg, recent] =
+    await Promise.all([
+      prisma.order.count(),
+      prisma.product.count(),
+      prisma.user.count({ where: { role: "customer" } }),
+      prisma.order.aggregate({
+        _sum: { total: true },
+        where: { paymentStatus: "paid" },
+      }),
+      prisma.order.findMany({ take: 8, orderBy: { createdAt: "desc" } }),
+    ]);
 
   const cards = [
     { label: "Total orders", value: orders },
     { label: "Products", value: productCount },
     { label: "Customers", value: customerCount },
-    { label: "Revenue", value: formatCurrency(revenueAgg._sum.total ?? 0) }
+    { label: "Revenue", value: formatCurrency(revenueAgg._sum.total ?? 0) },
   ];
 
   return (
@@ -56,7 +60,11 @@ export default async function AdminDashboard() {
               </tr>
             ))}
             {recent.length === 0 ? (
-              <tr><td className="p-6 text-center text-ink/50" colSpan={5}>No orders yet.</td></tr>
+              <tr>
+                <td className="p-6 text-center text-ink/50" colSpan={5}>
+                  No orders yet.
+                </td>
+              </tr>
             ) : null}
           </tbody>
         </table>

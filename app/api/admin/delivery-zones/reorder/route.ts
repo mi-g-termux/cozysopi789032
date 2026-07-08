@@ -15,8 +15,8 @@ export async function PUT(req: Request) {
 
   await prisma.$transaction(
     parsed.data.ids.map((id, index) =>
-      prisma.deliveryZone.update({ where: { id }, data: { sortOrder: index } })
-    )
+      prisma.deliveryZone.update({ where: { id }, data: { sortOrder: index } }),
+    ),
   );
   return ok({ reordered: true });
 }

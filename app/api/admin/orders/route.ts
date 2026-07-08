@@ -7,7 +7,7 @@ export async function GET() {
   if (!admin) return Errors.FORBIDDEN();
   const orders = await prisma.order.findMany({
     orderBy: { createdAt: "desc" },
-    include: { items: { include: { product: true } } }
+    include: { items: { include: { product: true } } },
   });
   return ok(orders);
 }

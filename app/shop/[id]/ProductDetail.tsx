@@ -39,7 +39,12 @@ export function ProductDetail({ product }: { product: ProductDTO }) {
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 md:grid-cols-2">
         <div>
           <div className="relative aspect-square overflow-hidden rounded-2xl bg-white">
-            <Image src={product.images[active] ?? product.images[0]} alt={product.name} fill className="object-cover" />
+            <Image
+              src={product.images[active] ?? product.images[0]}
+              alt={product.name}
+              fill
+              className="object-cover"
+            />
           </div>
           {product.images.length > 1 ? (
             <div className="mt-4 flex gap-3">
@@ -59,24 +64,36 @@ export function ProductDetail({ product }: { product: ProductDTO }) {
         </div>
 
         <div>
-          <p className="text-sm uppercase tracking-wide text-accent">{product.category}</p>
+          <p className="text-sm uppercase tracking-wide text-accent">
+            {product.category}
+          </p>
           <h1 className="mt-1 font-heading text-4xl">{product.name}</h1>
-          <p className="mt-4 text-2xl font-semibold">{formatCurrency(product.price)}</p>
-          <p className="mt-6 leading-relaxed text-ink/70">{product.description}</p>
+          <p className="mt-4 text-2xl font-semibold">
+            {formatCurrency(product.price)}
+          </p>
+          <p className="mt-6 leading-relaxed text-ink/70">
+            {product.description}
+          </p>
 
-          <p className={`mt-4 text-sm ${soldOut ? "text-red-500" : "text-olive"}`}>
+          <p
+            className={`mt-4 text-sm ${soldOut ? "text-red-500" : "text-olive"}`}
+          >
             {soldOut ? "Currently sold out" : `${stock} in stock`}
           </p>
 
           <div className="mt-6 flex items-center gap-4">
             <div className="flex items-center gap-3 rounded-full border border-secondary px-3 py-2">
-              <button onClick={() => setQty((q) => Math.max(1, q - 1))}>-</button>
+              <button onClick={() => setQty((q) => Math.max(1, q - 1))}>
+                -
+              </button>
               <span className="w-8 text-center">{qty}</span>
-              <button onClick={() => setQty((q) => Math.min(stock, q + 1))}>+</button>
+              <button onClick={() => setQty((q) => Math.min(stock, q + 1))}>
+                +
+              </button>
             </div>
             <motion.button
-              whileHover={ { scale: 1.03 } }
-              whileTap={ { scale: 0.97 } }
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               disabled={soldOut}
               onClick={() => {
                 addItem({ ...product, stock }, qty);

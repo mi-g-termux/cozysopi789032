@@ -9,7 +9,7 @@ export default async function ShopPage() {
   try {
     products = (await prisma.product.findMany({
       where: { active: true },
-      orderBy: { createdAt: "desc" }
+      orderBy: { createdAt: "desc" },
     })) as ProductDTO[];
   } catch {
     products = [];

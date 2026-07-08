@@ -22,7 +22,7 @@ function toDataUri(file: File): Promise<string> {
  */
 export function ImageUploader({
   images,
-  onChange
+  onChange,
 }: {
   images: string[];
   onChange: (next: string[]) => void;
@@ -49,7 +49,7 @@ export function ImageUploader({
         const res = await fetch("/api/upload", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ file: dataUri })
+          body: JSON.stringify({ file: dataUri }),
         });
         const json = await res.json();
         if (json.success) next.push(json.data.url);
@@ -99,7 +99,9 @@ export function ImageUploader({
         }`}
       >
         <p className="font-medium">Drag &amp; drop images here</p>
-        <p className="text-sm text-ink/60">or click to browse (JPG, PNG, WEBP, AVIF \u00B7 max 10MB)</p>
+        <p className="text-sm text-ink/60">
+          or click to browse (JPG, PNG, WEBP, AVIF \u00B7 max 10MB)
+        </p>
         <input
           ref={inputRef}
           type="file"
@@ -112,22 +114,48 @@ export function ImageUploader({
 
       {progress > 0 ? (
         <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-secondary/40">
-          <div className="h-full bg-accent transition-all" style={ { width: `${progress}%` } } />
+          <div
+            className="h-full bg-accent transition-all"
+            style={{ width: `${progress}%` }}
+          />
         </div>
       ) : null}
 
       {images.length > 0 ? (
         <div className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-4">
           {images.map((url, i) => (
-            <div key={url} className="group relative aspect-square overflow-hidden rounded-xl border border-secondary">
+            <div
+              key={url}
+              className="group relative aspect-square overflow-hidden rounded-xl border border-secondary"
+            >
               <Image src={url} alt="" fill className="object-cover" />
               {i === 0 ? (
-                <span className="absolute left-1 top-1 rounded bg-olive px-1.5 py-0.5 text-[10px] text-white">Main</span>
+                <span className="absolute left-1 top-1 rounded bg-olive px-1.5 py-0.5 text-[10px] text-white">
+                  Main
+                </span>
               ) : null}
               <div className="absolute inset-x-0 bottom-0 flex justify-between bg-ink/60 p-1 opacity-0 transition group-hover:opacity-100">
-                <button type="button" onClick={() => move(i, -1)} className="text-white">&larr;</button>
-                <button type="button" onClick={() => remove(i)} className="text-white">&times;</button>
-                <button type="button" onClick={() => move(i, 1)} className="text-white">&rarr;</button>
+                <button
+                  type="button"
+                  onClick={() => move(i, -1)}
+                  className="text-white"
+                >
+                  &larr;
+                </button>
+                <button
+                  type="button"
+                  onClick={() => remove(i)}
+                  className="text-white"
+                >
+                  &times;
+                </button>
+                <button
+                  type="button"
+                  onClick={() => move(i, 1)}
+                  className="text-white"
+                >
+                  &rarr;
+                </button>
               </div>
             </div>
           ))}

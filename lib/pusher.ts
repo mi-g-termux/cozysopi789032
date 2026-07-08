@@ -21,11 +21,16 @@ export const CHANNELS = {
   SHOP: "public-shop"
 } as const;
 
+// Every admin-driven change fires one of these. Clients refresh on any of them.
 export const EVENTS = {
   NEW_ORDER: "new-order",
   STOCK_UPDATE: "stock-update",
   ORDER_STATUS: "order-status",
-  ZONE_UPDATED: "zone-updated"
+  ZONE_UPDATED: "zone-updated",
+  PRODUCT_UPDATED: "product-updated",
+  PRODUCT_DELETED: "product-deleted",
+  SETTINGS_UPDATED: "settings-updated",
+  CUSTOMER_UPDATED: "customer-updated"
 } as const;
 
 /** Fire-and-forget trigger that no-ops when Pusher isn't configured. */
@@ -35,5 +40,18 @@ export async function emit(channel: string, event: string, payload: unknown) {
     await pusherServer.trigger(channel, event, payload);
   } catch (err) {
     console.error("[pusher] trigger failed", err);
+  }
+}
+
+/**
+ * Broadcast a change to BOTH the public storefront and the admin panel so it
+ * appears instantly on every open device (customers and admins alike).
+ */
+export async function broadcast(event: string, payload: unknown = {}) {
+  if (!pusherServer) return;
+  try {
+    await pusherServer.trigger([CHANNELS.SHOP, CHANNELS.ADMIN], event, payload);
+  } catch (err) {
+    console.error("[pusher] broadcast failed", err);
   }
 }

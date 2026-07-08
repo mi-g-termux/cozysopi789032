@@ -4,10 +4,12 @@
 
 :root {
   --cream: #faf7f2;
+  --sand: #f5e6c3;
   --ink: #2c2c2c;
   --accent: #8b7355;
   --secondary: #d4c5a9;
   --olive: #6b7c5c;
+  --grass: #3f8b43;
 }
 
 html {
@@ -20,32 +22,65 @@ body {
   font-family: var(--font-inter), system-ui, sans-serif;
 }
 
-h1, h2, h3, h4, .font-heading {
-  font-family: var(--font-playfair), Georgia, serif;
+h1,
+h2,
+h3,
+h4,
+.font-heading {
+  font-family: var(--font-fredoka), ui-rounded, system-ui, sans-serif;
+  letter-spacing: -0.01em;
 }
 
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 font-medium transition-all duration-200;
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 font-semibold transition-all duration-200 active:scale-95;
   }
+  /* Dark pill \u2014 the primary CTA style in the reference (ORDER NOW / BUY NOW) */
   .btn-primary {
-    @apply btn bg-accent text-white hover:shadow-hover;
+    @apply btn bg-ink text-white shadow-pill hover:-translate-y-0.5 hover:shadow-hover;
   }
+  /* Soft cream pill with subtle border */
   .btn-outline {
-    @apply btn border border-accent text-accent hover:bg-accent hover:text-white;
+    @apply btn border border-ink/10 bg-white text-ink hover:-translate-y-0.5 hover:shadow-soft;
+  }
+  /* Grass green pill (FAQ / accents) */
+  .btn-grass {
+    @apply btn bg-grass text-white shadow-pill hover:-translate-y-0.5 hover:bg-grass-dark;
   }
   .input {
-    @apply w-full rounded-xl border border-secondary bg-white px-4 py-3 text-ink outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20;
+    @apply w-full rounded-2xl border border-secondary bg-white px-4 py-3 text-ink outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20;
   }
   .card {
-    @apply rounded-2xl bg-white shadow-soft;
+    @apply rounded-3xl bg-white shadow-soft;
   }
   .label {
     @apply mb-1 block text-sm font-medium text-ink/80;
   }
+  .pill-nav {
+    @apply rounded-full px-5 py-2 text-sm font-medium transition-colors;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full bg-white/70 px-3 py-1 text-xs font-medium text-ink;
+  }
 }
 
 /* Custom scrollbar */
-::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-track { background: var(--cream); }
-::-webkit-scrollbar-thumb { background: var(--secondary); border-radius: 8px; }
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--cream);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--secondary);
+  border-radius: 8px;
+}
+
+/* Hide scrollbar for horizontal carousels */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

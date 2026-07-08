@@ -19,7 +19,7 @@ export default function RegisterPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form)
+        body: JSON.stringify(form),
       });
       const json = await res.json();
       if (!json.success) {
@@ -45,28 +45,53 @@ export default function RegisterPage() {
           <form onSubmit={onSubmit} className="mt-6 space-y-4">
             <div>
               <label className="label">Name</label>
-              <input className="input" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+              <input
+                className="input"
+                required
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
             </div>
             <div>
               <label className="label">Email</label>
-              <input className="input" type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+              <input
+                className="input"
+                type="email"
+                required
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+              />
             </div>
             <div>
               <label className="label">Password</label>
-              <input className="input" type="password" required value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
+              <input
+                className="input"
+                type="password"
+                required
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+              />
             </div>
-            <button disabled={loading} className="btn-primary w-full disabled:opacity-60">
+            <button
+              disabled={loading}
+              className="btn-primary w-full disabled:opacity-60"
+            >
               {loading ? "Creating account..." : "Create account"}
             </button>
           </form>
 
-          <button onClick={() => signIn("google", { callbackUrl: "/account" })} className="btn-outline mt-3 w-full">
+          <button
+            onClick={() => signIn("google", { callbackUrl: "/account" })}
+            className="btn-outline mt-3 w-full"
+          >
             Continue with Google
           </button>
 
           <p className="mt-4 text-center text-sm">
             Already have an account?{" "}
-            <Link href="/login" className="text-accent hover:underline">Sign in</Link>
+            <Link href="/login" className="text-accent hover:underline">
+              Sign in
+            </Link>
           </p>
         </div>
       </div>

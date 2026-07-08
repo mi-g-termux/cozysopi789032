@@ -10,7 +10,9 @@ export function ProductGrid({ products }: { products: ProductDTO[] }) {
     return (
       <div className="card p-12 text-center text-ink/60">
         <p className="text-lg">No products found.</p>
-        <p className="mt-1 text-sm">Try a different category or check back soon.</p>
+        <p className="mt-1 text-sm">
+          Try a different category or check back soon.
+        </p>
       </div>
     );
   }
@@ -19,7 +21,7 @@ export function ProductGrid({ products }: { products: ProductDTO[] }) {
       variants={staggerContainer}
       initial="hidden"
       whileInView="show"
-      viewport={ { once: true, amount: 0.15 } }
+      viewport={{ once: true, amount: 0.15 }}
       className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4"
     >
       {products.map((p) => (

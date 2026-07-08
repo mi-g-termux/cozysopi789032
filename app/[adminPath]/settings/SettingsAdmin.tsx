@@ -27,10 +27,11 @@ export function SettingsAdmin({ initial }: { initial: SettingsForm }) {
         body: JSON.stringify({
           ...form,
           freeDeliveryAbove:
-            form.freeDeliveryAbove === null || Number.isNaN(form.freeDeliveryAbove)
+            form.freeDeliveryAbove === null ||
+            Number.isNaN(form.freeDeliveryAbove)
               ? null
-              : Number(form.freeDeliveryAbove)
-        })
+              : Number(form.freeDeliveryAbove),
+        }),
       });
       const json = await res.json();
       if (json.success) toast.success("Settings saved");
@@ -40,8 +41,9 @@ export function SettingsAdmin({ initial }: { initial: SettingsForm }) {
     }
   }
 
-  const set = (k: keyof SettingsForm) => (e: React.ChangeEvent<HTMLInputElement>) =>
-    setForm((f) => ({ ...f, [k]: e.target.value }));
+  const set =
+    (k: keyof SettingsForm) => (e: React.ChangeEvent<HTMLInputElement>) =>
+      setForm((f) => ({ ...f, [k]: e.target.value }));
 
   return (
     <div className="max-w-2xl">
@@ -50,19 +52,35 @@ export function SettingsAdmin({ initial }: { initial: SettingsForm }) {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="label">Store name</label>
-            <input className="input" value={form.storeName} onChange={set("storeName")} />
+            <input
+              className="input"
+              value={form.storeName}
+              onChange={set("storeName")}
+            />
           </div>
           <div>
             <label className="label">Store email</label>
-            <input className="input" value={form.storeEmail} onChange={set("storeEmail")} />
+            <input
+              className="input"
+              value={form.storeEmail}
+              onChange={set("storeEmail")}
+            />
           </div>
           <div>
             <label className="label">Currency</label>
-            <input className="input" value={form.currency} onChange={set("currency")} />
+            <input
+              className="input"
+              value={form.currency}
+              onChange={set("currency")}
+            />
           </div>
           <div>
             <label className="label">Currency symbol</label>
-            <input className="input" value={form.currencySymbol} onChange={set("currencySymbol")} />
+            <input
+              className="input"
+              value={form.currencySymbol}
+              onChange={set("currencySymbol")}
+            />
           </div>
         </div>
         <div>
@@ -72,18 +90,35 @@ export function SettingsAdmin({ initial }: { initial: SettingsForm }) {
             type="number"
             step="0.01"
             value={form.freeDeliveryAbove ?? ""}
-            onChange={(e) => setForm((f) => ({ ...f, freeDeliveryAbove: e.target.value === "" ? null : Number(e.target.value) }))}
+            onChange={(e) =>
+              setForm((f) => ({
+                ...f,
+                freeDeliveryAbove:
+                  e.target.value === "" ? null : Number(e.target.value),
+              }))
+            }
           />
         </div>
         <hr className="border-secondary/50" />
-        <p className="text-sm text-ink/60">Payment keys (also configurable via environment variables).</p>
+        <p className="text-sm text-ink/60">
+          Payment keys (also configurable via environment variables).
+        </p>
         <div>
           <label className="label">Stripe secret key</label>
-          <input className="input" value={form.stripeSecretKey} onChange={set("stripeSecretKey")} placeholder="sk_..." />
+          <input
+            className="input"
+            value={form.stripeSecretKey}
+            onChange={set("stripeSecretKey")}
+            placeholder="sk_..."
+          />
         </div>
         <div>
           <label className="label">PayPal client ID</label>
-          <input className="input" value={form.paypalClientId} onChange={set("paypalClientId")} />
+          <input
+            className="input"
+            value={form.paypalClientId}
+            onChange={set("paypalClientId")}
+          />
         </div>
         <button disabled={saving} className="btn-primary disabled:opacity-60">
           {saving ? "Saving..." : "Save settings"}

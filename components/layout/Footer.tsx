@@ -1,34 +1,63 @@
 import Link from "next/link";
+import { Wave } from "@/components/ui/Wave";
 
 export function Footer() {
   return (
-    <footer className="mt-24 border-t border-secondary/50 bg-white">
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-3">
-        <div>
-          <h3 className="font-heading text-xl text-accent">Cozy Bites</h3>
-          <p className="mt-2 text-sm text-ink/70">
-            Handcrafted appetizers &amp; boards, delivered warm to your door.
-          </p>
+    <footer className="mt-24">
+      <Wave color="#3F8B43" />
+      <div className="bg-grass text-white">
+        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <h3 className="font-heading text-3xl font-bold">Creamy</h3>
+            <p className="mt-3 text-sm text-white/80">
+              Handcrafted ice cream made with real fruits and fresh dairy,
+              delivered to your door.
+            </p>
+          </div>
+          <div>
+            <h4 className="mb-3 font-heading text-lg">Address</h4>
+            <ul className="space-y-1 text-sm text-white/80">
+              <li>12 Sundae Street</li>
+              <li>Scoop District</li>
+              <li>hello@creamy.shop</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="mb-3 font-heading text-lg">Opening Hours</h4>
+            <ul className="space-y-1 text-sm text-white/80">
+              <li>Mon – Fri: 10am – 9pm</li>
+              <li>Sat – Sun: 9am – 11pm</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="mb-3 font-heading text-lg">Quick Links</h4>
+            <ul className="space-y-1 text-sm text-white/80">
+              <li>
+                <Link href="/shop" className="hover:text-white">
+                  Menu
+                </Link>
+              </li>
+              <li>
+                <Link href="/cart" className="hover:text-white">
+                  Cart
+                </Link>
+              </li>
+              <li>
+                <Link href="/account" className="hover:text-white">
+                  My account
+                </Link>
+              </li>
+              <li>
+                <Link href="/login" className="hover:text-white">
+                  Sign in
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div>
-          <h4 className="mb-2 font-semibold">Shop</h4>
-          <ul className="space-y-1 text-sm text-ink/70">
-            <li><Link href="/shop" className="hover:text-accent">All products</Link></li>
-            <li><Link href="/cart" className="hover:text-accent">Cart</Link></li>
-            <li><Link href="/account" className="hover:text-accent">My account</Link></li>
-          </ul>
+        <div className="border-t border-white/15 py-5 text-center text-xs text-white/70">
+          &copy; {new Date().getFullYear()} Creamy. All rights reserved.
         </div>
-        <div>
-          <h4 className="mb-2 font-semibold">Help</h4>
-          <ul className="space-y-1 text-sm text-ink/70">
-            <li><Link href="/login" className="hover:text-accent">Sign in</Link></li>
-            <li><Link href="/register" className="hover:text-accent">Create account</Link></li>
-            <li><Link href="/forgot-password" className="hover:text-accent">Reset password</Link></li>
-          </ul>
-        </div>
-      </div>
-      <div className="border-t border-secondary/50 py-4 text-center text-xs text-ink/50">
-        &copy; {new Date().getFullYear()} Cozy Bites. All rights reserved.
       </div>
     </footer>
   );

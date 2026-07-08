@@ -20,7 +20,7 @@ function ResetForm() {
       const res = await fetch("/api/auth/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, password, confirm })
+        body: JSON.stringify({ token, password, confirm }),
       });
       const json = await res.json();
       if (!json.success) {
@@ -44,13 +44,28 @@ function ResetForm() {
           <form onSubmit={onSubmit} className="mt-6 space-y-4">
             <div>
               <label className="label">New password</label>
-              <input className="input" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+              <input
+                className="input"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
             <div>
               <label className="label">Confirm password</label>
-              <input className="input" type="password" required value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+              <input
+                className="input"
+                type="password"
+                required
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+              />
             </div>
-            <button disabled={loading} className="btn-primary w-full disabled:opacity-60">
+            <button
+              disabled={loading}
+              className="btn-primary w-full disabled:opacity-60"
+            >
               {loading ? "Updating..." : "Update password"}
             </button>
           </form>

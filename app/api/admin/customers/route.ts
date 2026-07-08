@@ -15,8 +15,8 @@ export async function GET() {
       emailVerified: true,
       createdAt: true,
       lastLoginAt: true,
-      _count: { select: { orders: true } }
-    }
+      _count: { select: { orders: true } },
+    },
   });
   return ok(customers);
 }

@@ -7,7 +7,7 @@ const stats = [
   { label: "Happy guests served", to: 12000, suffix: "+" },
   { label: "Signature recipes", to: 45, suffix: "" },
   { label: "Cities delivered", to: 8, suffix: "" },
-  { label: "Average rating", to: 5, suffix: "\u2605" }
+  { label: "Average rating", to: 5, suffix: "\u2605" },
 ];
 
 export function Stats() {
@@ -15,7 +15,9 @@ export function Stats() {
     <section className="bg-white py-20">
       <div className="mx-auto max-w-6xl px-4">
         <Reveal className="mb-12 text-center">
-          <h2 className="font-heading text-3xl md:text-4xl">Loved at every gathering</h2>
+          <h2 className="font-heading text-3xl md:text-4xl">
+            Loved at every gathering
+          </h2>
         </Reveal>
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {stats.map((s, i) => (

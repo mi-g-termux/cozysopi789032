@@ -17,12 +17,19 @@ export async function PUT(req: Request, { params }: Params) {
 
   const body = await req.json().catch(() => null);
   const parsed = addressSchema.partial().safeParse(body);
-  if (!parsed.success) return Errors.VALIDATION(parsed.error.issues[0]?.message);
+  if (!parsed.success)
+    return Errors.VALIDATION(parsed.error.issues[0]?.message);
 
   if (parsed.data.isDefault) {
-    await prisma.address.updateMany({ where: { userId: session.user.id }, data: { isDefault: false } });
+    await prisma.address.updateMany({
+      where: { userId: session.user.id },
+      data: { isDefault: false },
+    });
   }
-  const address = await prisma.address.update({ where: { id: params.id }, data: parsed.data });
+  const address = await prisma.address.update({
+    where: { id: params.id },
+    data: parsed.data,
+  });
   return ok(address);
 }
 

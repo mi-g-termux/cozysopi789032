@@ -7,7 +7,7 @@ export default async function AdminCustomersPage() {
   const customers = await prisma.user.findMany({
     where: { role: "customer" },
     orderBy: { createdAt: "desc" },
-    include: { _count: { select: { orders: true } } }
+    include: { _count: { select: { orders: true } } },
   });
 
   return (
@@ -33,11 +33,17 @@ export default async function AdminCustomersPage() {
                 <td className="p-3">{c.emailVerified ? "Yes" : "No"}</td>
                 <td className="p-3">{c._count.orders}</td>
                 <td className="p-3">{formatDate(c.createdAt)}</td>
-                <td className="p-3">{c.lastLoginAt ? formatDate(c.lastLoginAt) : "\u2014"}</td>
+                <td className="p-3">
+                  {c.lastLoginAt ? formatDate(c.lastLoginAt) : "\u2014"}
+                </td>
               </tr>
             ))}
             {customers.length === 0 ? (
-              <tr><td colSpan={6} className="p-6 text-center text-ink/50">No customers yet.</td></tr>
+              <tr>
+                <td colSpan={6} className="p-6 text-center text-ink/50">
+                  No customers yet.
+                </td>
+              </tr>
             ) : null}
           </tbody>
         </table>

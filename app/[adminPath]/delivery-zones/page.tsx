@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminDeliveryZonesPage() {
   const zones = (await prisma.deliveryZone.findMany({
-    orderBy: { sortOrder: "asc" }
+    orderBy: { sortOrder: "asc" },
   })) as DeliveryZoneDTO[];
   return <DeliveryZonesAdmin initial={zones} />;
 }

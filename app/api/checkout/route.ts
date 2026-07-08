@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { ok, Errors } from "@/lib/api";
 import { checkoutSchema } from "@/lib/validations";
 import { auth } from "@/lib/auth";
-import { emit, CHANNELS, EVENTS } from "@/lib/pusher";
+import { emit, broadcast, CHANNELS, EVENTS } from "@/lib/pusher";
 import { sendOrderConfirmation } from "@/lib/mail";
 import { formatCurrency, orderRef } from "@/lib/utils";
 import { stripe, stripeConfigured } from "@/lib/stripe";
@@ -11,7 +11,8 @@ import { createPaypalOrder, paypalConfigured } from "@/lib/paypal";
 export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
   const parsed = checkoutSchema.safeParse(body);
-  if (!parsed.success) return Errors.VALIDATION(parsed.error.issues[0]?.message);
+  if (!parsed.success)
+    return Errors.VALIDATION(parsed.error.issues[0]?.message);
 
   const { email, items, area, address, notes, paymentMethod } = parsed.data;
   const session = await auth();
@@ -19,9 +20,10 @@ export async function POST(req: Request) {
 
   // Load products and validate stock server-side.
   const products = await prisma.product.findMany({
-    where: { id: { in: items.map((i) => i.productId) }, active: true }
+    where: { id: { in: items.map((i) => i.productId) }, active: true },
   });
-  if (products.length !== items.length) return Errors.VALIDATION("Some items are unavailable.");
+  if (products.length !== items.length)
+    return Errors.VALIDATION("Some items are unavailable.");
 
   let subtotal = 0;
   const orderItems = items.map((i) => {
@@ -53,21 +55,33 @@ export async function POST(req: Request) {
         deliveryArea: area,
         address,
         notes,
-        items: { create: orderItems }
-      }
+        items: { create: orderItems },
+      },
     });
 
-    // Decrement stock and broadcast updates.
+    // Decrement stock and broadcast live updates to every open device.
     for (const it of orderItems) {
       const updated = await prisma.product.update({
         where: { id: it.productId },
-        data: { stock: { decrement: it.quantity } }
+        data: { stock: { decrement: it.quantity } },
       });
-      await emit(CHANNELS.SHOP, EVENTS.STOCK_UPDATE, { id: updated.id, stock: updated.stock });
+      await broadcast(EVENTS.STOCK_UPDATE, {
+        id: updated.id,
+        stock: updated.stock,
+      });
     }
 
-    await emit(CHANNELS.ADMIN, EVENTS.NEW_ORDER, { id: order.id, total, email });
-    await sendOrderConfirmation(email, orderRef(order.id), formatCurrency(total));
+    // Notify admins of the new order (drives the dashboard toast).
+    await emit(CHANNELS.ADMIN, EVENTS.NEW_ORDER, {
+      id: order.id,
+      total,
+      email,
+    });
+    await sendOrderConfirmation(
+      email,
+      orderRef(order.id),
+      formatCurrency(total),
+    );
 
     // Online payment: create the provider session and return a redirect URL.
     if (paymentMethod === "stripe" && stripeConfigured) {
@@ -80,22 +94,28 @@ export async function POST(req: Request) {
             price_data: {
               currency: "usd",
               product_data: { name: `Order ${orderRef(order.id)}` },
-              unit_amount: Math.round(total * 100)
+              unit_amount: Math.round(total * 100),
             },
-            quantity: 1
-          }
+            quantity: 1,
+          },
         ],
         metadata: { orderId: order.id },
         success_url: `${base}/order-success?ref=${order.id}`,
-        cancel_url: `${base}/checkout`
+        cancel_url: `${base}/checkout`,
       });
       return ok({ orderId: order.id, redirectUrl: checkout.url });
     }
 
     if (paymentMethod === "paypal" && paypalConfigured) {
       const pp = await createPaypalOrder(total);
-      const approve = pp.links?.find((l: { rel: string; href: string }) => l.rel === "approve");
-      return ok({ orderId: order.id, paypalOrderId: pp.id, redirectUrl: approve?.href ?? null });
+      const approve = pp.links?.find(
+        (l: { rel: string; href: string }) => l.rel === "approve",
+      );
+      return ok({
+        orderId: order.id,
+        paypalOrderId: pp.id,
+        redirectUrl: approve?.href ?? null,
+      });
     }
 
     return ok({ orderId: order.id, redirectUrl: null }, 201);

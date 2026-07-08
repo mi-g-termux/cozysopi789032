@@ -18,7 +18,9 @@ export function CheckoutClient({ zones }: { zones: DeliveryZoneDTO[] }) {
   const [area, setArea] = useState("");
   const [calc, setCalc] = useState<CalculateDeliveryResult | null>(null);
   const [loading, setLoading] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<"stripe" | "paypal" | "cod">("cod");
+  const [paymentMethod, setPaymentMethod] = useState<
+    "stripe" | "paypal" | "cod"
+  >("cod");
   const [form, setForm] = useState({
     email: session?.user?.email ?? "",
     fullName: session?.user?.name ?? "",
@@ -26,7 +28,7 @@ export function CheckoutClient({ zones }: { zones: DeliveryZoneDTO[] }) {
     street: "",
     city: "",
     postalCode: "",
-    notes: ""
+    notes: "",
   });
 
   const deliveryCharge = calc ? (calc.isFree ? 0 : calc.charge) : 0;
@@ -34,7 +36,7 @@ export function CheckoutClient({ zones }: { zones: DeliveryZoneDTO[] }) {
 
   const areaOptions = useMemo(
     () => zones.map((z) => ({ zone: z.name, areas: z.areas })),
-    [zones]
+    [zones],
   );
 
   async function onAreaChange(value: string) {
@@ -43,7 +45,7 @@ export function CheckoutClient({ zones }: { zones: DeliveryZoneDTO[] }) {
     const res = await fetch("/api/delivery-zones/calculate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ area: value, subtotal })
+      body: JSON.stringify({ area: value, subtotal }),
     });
     const json = await res.json();
     if (json.success) setCalc(json.data);
@@ -51,7 +53,13 @@ export function CheckoutClient({ zones }: { zones: DeliveryZoneDTO[] }) {
 
   async function placeOrder() {
     if (!area) return toast.error("Please select your delivery area.");
-    if (!form.email || !form.fullName || !form.phone || !form.street || !form.city) {
+    if (
+      !form.email ||
+      !form.fullName ||
+      !form.phone ||
+      !form.street ||
+      !form.city
+    ) {
       return toast.error("Please complete your delivery details.");
     }
     setLoading(true);
@@ -61,7 +69,10 @@ export function CheckoutClient({ zones }: { zones: DeliveryZoneDTO[] }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: form.email,
-          items: cartItems.map((i) => ({ productId: i.product.id, quantity: i.quantity })),
+          items: cartItems.map((i) => ({
+            productId: i.product.id,
+            quantity: i.quantity,
+          })),
           area,
           address: {
             fullName: form.fullName,
@@ -69,11 +80,11 @@ export function CheckoutClient({ zones }: { zones: DeliveryZoneDTO[] }) {
             street: form.street,
             area,
             city: form.city,
-            postalCode: form.postalCode
+            postalCode: form.postalCode,
           },
           notes: form.notes,
-          paymentMethod
-        })
+          paymentMethod,
+        }),
       });
       const json = await res.json();
       if (!json.success) {
@@ -97,7 +108,9 @@ export function CheckoutClient({ zones }: { zones: DeliveryZoneDTO[] }) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-24 text-center">
         <h1 className="font-heading text-3xl">Your cart is empty</h1>
-        <a href="/shop" className="btn-primary mt-6">Browse the shop</a>
+        <a href="/shop" className="btn-primary mt-6">
+          Browse the shop
+        </a>
       </div>
     );
   }
@@ -105,7 +118,7 @@ export function CheckoutClient({ zones }: { zones: DeliveryZoneDTO[] }) {
   const field = (name: keyof typeof form) => ({
     value: form[name],
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-      setForm((f) => ({ ...f, [name]: e.target.value }))
+      setForm((f) => ({ ...f, [name]: e.target.value })),
   });
 
   return (
@@ -146,12 +159,18 @@ export function CheckoutClient({ zones }: { zones: DeliveryZoneDTO[] }) {
 
             <div>
               <label className="label">Delivery area</label>
-              <select className="input" value={area} onChange={(e) => onAreaChange(e.target.value)}>
+              <select
+                className="input"
+                value={area}
+                onChange={(e) => onAreaChange(e.target.value)}
+              >
                 <option value="">Select your delivery area...</option>
                 {areaOptions.map((group) => (
                   <optgroup key={group.zone} label={group.zone}>
                     {group.areas.map((a) => (
-                      <option key={a} value={a}>{a}</option>
+                      <option key={a} value={a}>
+                        {a}
+                      </option>
                     ))}
                   </optgroup>
                 ))}
@@ -162,15 +181,24 @@ export function CheckoutClient({ zones }: { zones: DeliveryZoneDTO[] }) {
               <div className="rounded-xl bg-white p-4 text-sm">
                 {calc.isFree ? (
                   <p className="font-medium text-olive">
-                    \uD83C\uDF89 Free delivery! (Orders above {formatCurrency(calc.freeAboveAmount ?? 0)})
+                    \uD83C\uDF89 Free delivery! (Orders above{" "}
+                    {formatCurrency(calc.freeAboveAmount ?? 0)})
                   </p>
                 ) : (
-                  <p>Delivery to {area}: <strong>{formatCurrency(calc.charge)}</strong></p>
+                  <p>
+                    Delivery to {area}:{" "}
+                    <strong>{formatCurrency(calc.charge)}</strong>
+                  </p>
                 )}
-                <p className="text-ink/60">Estimated delivery: {calc.estimatedDelivery}</p>
-                {!calc.isFree && calc.remainingForFree && calc.remainingForFree > 0 ? (
+                <p className="text-ink/60">
+                  Estimated delivery: {calc.estimatedDelivery}
+                </p>
+                {!calc.isFree &&
+                calc.remainingForFree &&
+                calc.remainingForFree > 0 ? (
                   <p className="mt-1 text-ink/60">
-                    Add {formatCurrency(calc.remainingForFree)} more for free delivery.
+                    Add {formatCurrency(calc.remainingForFree)} more for free
+                    delivery.
                   </p>
                 ) : null}
               </div>
@@ -187,9 +215,16 @@ export function CheckoutClient({ zones }: { zones: DeliveryZoneDTO[] }) {
           <h2 className="font-heading text-xl">Order summary</h2>
           <div className="mt-4 space-y-3">
             {cartItems.map((item) => (
-              <div key={item.product.id} className="flex justify-between text-sm">
-                <span>{item.product.name} \u00D7 {item.quantity}</span>
-                <span>{formatCurrency(item.product.price * item.quantity)}</span>
+              <div
+                key={item.product.id}
+                className="flex justify-between text-sm"
+              >
+                <span>
+                  {item.product.name} \u00D7 {item.quantity}
+                </span>
+                <span>
+                  {formatCurrency(item.product.price * item.quantity)}
+                </span>
               </div>
             ))}
           </div>
@@ -212,7 +247,10 @@ export function CheckoutClient({ zones }: { zones: DeliveryZoneDTO[] }) {
             <label className="label">Payment method</label>
             <div className="space-y-2">
               {(["cod", "stripe", "paypal"] as const).map((m) => (
-                <label key={m} className="flex cursor-pointer items-center gap-3 rounded-xl border border-secondary bg-white p-3">
+                <label
+                  key={m}
+                  className="flex cursor-pointer items-center gap-3 rounded-xl border border-secondary bg-white p-3"
+                >
                   <input
                     type="radio"
                     name="payment"
@@ -227,8 +265,14 @@ export function CheckoutClient({ zones }: { zones: DeliveryZoneDTO[] }) {
             </div>
           </div>
 
-          <button onClick={placeOrder} disabled={loading} className="btn-primary mt-6 w-full disabled:opacity-60">
-            {loading ? "Placing order..." : `Place order \u2014 ${formatCurrency(total)}`}
+          <button
+            onClick={placeOrder}
+            disabled={loading}
+            className="btn-primary mt-6 w-full disabled:opacity-60"
+          >
+            {loading
+              ? "Placing order..."
+              : `Place order \u2014 ${formatCurrency(total)}`}
           </button>
         </div>
       </div>

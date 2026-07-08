@@ -20,7 +20,7 @@ function VerifyForm() {
       const res = await fetch("/api/auth/verify-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp })
+        body: JSON.stringify({ email, otp }),
       });
       const json = await res.json();
       if (!json.success) {
@@ -53,7 +53,10 @@ function VerifyForm() {
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
             />
-            <button disabled={loading} className="btn-primary w-full disabled:opacity-60">
+            <button
+              disabled={loading}
+              className="btn-primary w-full disabled:opacity-60"
+            >
               {loading ? "Verifying..." : "Verify"}
             </button>
           </form>

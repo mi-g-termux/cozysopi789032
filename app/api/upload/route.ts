@@ -6,7 +6,8 @@ import { uploadImage, cloudinaryConfigured } from "@/lib/cloudinary";
 export async function POST(req: Request) {
   const admin = await requireAdmin();
   if (!admin) return Errors.FORBIDDEN();
-  if (!cloudinaryConfigured) return Errors.VALIDATION("Cloudinary is not configured.");
+  if (!cloudinaryConfigured)
+    return Errors.VALIDATION("Cloudinary is not configured.");
 
   const body = await req.json().catch(() => null);
   const file = body?.file as string | undefined;

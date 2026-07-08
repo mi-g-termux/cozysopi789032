@@ -9,7 +9,7 @@ export default async function CheckoutPage() {
   try {
     zones = (await prisma.deliveryZone.findMany({
       where: { active: true },
-      orderBy: { sortOrder: "asc" }
+      orderBy: { sortOrder: "asc" },
     })) as DeliveryZoneDTO[];
   } catch {
     zones = [];

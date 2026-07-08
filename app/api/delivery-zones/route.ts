@@ -6,7 +6,7 @@ export async function GET() {
   try {
     const zones = await prisma.deliveryZone.findMany({
       where: { active: true },
-      orderBy: { sortOrder: "asc" }
+      orderBy: { sortOrder: "asc" },
     });
     return ok(zones);
   } catch {

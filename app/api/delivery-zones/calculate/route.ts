@@ -7,7 +7,8 @@ import type { CalculateDeliveryResult } from "@/types";
 export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
   const parsed = calculateDeliverySchema.safeParse(body);
-  if (!parsed.success) return Errors.VALIDATION(parsed.error.issues[0]?.message);
+  if (!parsed.success)
+    return Errors.VALIDATION(parsed.error.issues[0]?.message);
 
   const { area, subtotal } = parsed.data;
   const zones = await prisma.deliveryZone.findMany({ where: { active: true } });
@@ -16,7 +17,9 @@ export async function POST(req: Request) {
 
   const qualifiesFree = zone.freeAbove != null && subtotal >= zone.freeAbove;
   const remainingForFree =
-    zone.freeAbove != null && !qualifiesFree ? Number((zone.freeAbove - subtotal).toFixed(2)) : null;
+    zone.freeAbove != null && !qualifiesFree
+      ? Number((zone.freeAbove - subtotal).toFixed(2))
+      : null;
 
   const result: CalculateDeliveryResult = {
     zone: zone.name,
@@ -24,7 +27,7 @@ export async function POST(req: Request) {
     isFree: qualifiesFree,
     freeAboveAmount: zone.freeAbove,
     remainingForFree,
-    estimatedDelivery: zone.estimatedDays
+    estimatedDelivery: zone.estimatedDays,
   };
   return ok(result);
 }
