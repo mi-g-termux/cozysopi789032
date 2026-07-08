@@ -5,22 +5,18 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const faqs = [
   {
-    icon: "\u{1F368}",
     q: "What makes your ice cream different?",
     a: "We use real tropical fruits, fresh dairy, and zero artificial flavours. Every batch is handcrafted in small quantities to maintain quality.",
   },
   {
-    icon: "\u{1F69A}",
     q: "Do you offer home delivery?",
     a: "Yes \u2014 we deliver within 24 hours in insulated packaging to keep every pint at the perfect temperature.",
   },
   {
-    icon: "\u{1F33F}",
     q: "Is your ice cream vegan or dairy-free?",
     a: "Several of our flavors have a fully vegan oat-milk variant. Look for the leaf badge on the tub.",
   },
   {
-    icon: "\u{1F382}",
     q: "Can I order in bulk for events/parties?",
     a: "Absolutely. Contact us at least 5 days ahead for custom flavor selections and event pricing.",
   },
@@ -50,10 +46,7 @@ export function Faq() {
                     onClick={() => setOpen(active ? -1 : idx)}
                     className="flex w-full items-center justify-between gap-4 rounded-full bg-green-soft px-6 py-4 text-left text-sm font-semibold text-[#1f3d24] transition hover:brightness-95"
                   >
-                    <span className="flex items-center gap-2">
-                      <span>{f.icon}</span>
-                      {f.q}
-                    </span>
+                    <span>{f.q}</span>
                     <motion.span
                       animate={{ rotate: active ? 90 : 0 }}
                       className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white text-[#1f3d24]"

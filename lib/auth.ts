@@ -29,22 +29,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      allowDangerousEmailAccountLinking: true
+      allowDangerousEmailAccountLinking: true,
     }),
     Credentials({
       credentials: {
         email: {},
         password: {},
         remember: {},
-        totp: {}
+        totp: {},
       },
       async authorize(raw) {
-        const email = String(raw?.email ?? "").toLowerCase().trim();
+        const email = String(raw?.email ?? "")
+          .toLowerCase()
+          .trim();
         const password = String(raw?.password ?? "");
         const totp = raw?.totp ? String(raw.totp) : "";
 
         const user = await prisma.user.findUnique({ where: { email } });
-        if (!user) throw new AuthError("NO_ACCOUNT", "No account found. Register?");
+        if (!user)
+          throw new AuthError("NO_ACCOUNT", "No account found. Register?");
 
         if (user.lockedUntil && user.lockedUntil > new Date()) {
           const mins = minutesUntil(user.lockedUntil);
@@ -63,8 +66,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             where: { id: user.id },
             data: {
               failedLoginAttempts: lock ? 0 : attempts,
-              lockedUntil: lock ? new Date(Date.now() + 60 * 60 * 1000) : null
-            }
+              lockedUntil: lock ? new Date(Date.now() + 60 * 60 * 1000) : null,
+            },
           });
           if (lock) {
             await sendLockoutAlert(user.email, "unknown");
@@ -74,19 +77,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         if (user.twoFactorEnabled) {
-          if (!totp) throw new AuthError("2FA_REQUIRED", "Enter your 2FA code.");
+          if (!totp)
+            throw new AuthError("2FA_REQUIRED", "Enter your 2FA code.");
           const verified = speakeasy.totp.verify({
             secret: user.twoFactorSecret ?? "",
             encoding: "base32",
             token: totp,
-            window: 1
+            window: 1,
           });
-          if (!verified) throw new AuthError("2FA_INVALID", "Invalid 2FA code.");
+          if (!verified)
+            throw new AuthError("2FA_INVALID", "Invalid 2FA code.");
         }
 
         await prisma.user.update({
           where: { id: user.id },
-          data: { failedLoginAttempts: 0, lockedUntil: null, lastLoginAt: new Date() }
+          data: {
+            failedLoginAttempts: 0,
+            lockedUntil: null,
+            lastLoginAt: new Date(),
+          },
         });
 
         return {
@@ -94,13 +103,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           email: user.email,
           name: user.name ?? undefined,
           role: user.role,
-          remember: String(raw?.remember ?? "") === "true"
+          remember: String(raw?.remember ?? "") === "true",
         } as any;
-      }
-    })
+      },
+    }),
   ],
   callbacks: {
     async signIn({ user, account }) {
+      // Respect the admin toggle: block Google sign-in when it is disabled.
+      if (account?.provider === "google") {
+        const settings = await prisma.settings.findUnique({
+          where: { id: "singleton" },
+        });
+        if (!settings?.googleAuthEnabled) return false;
+      }
       // Google sign-in: auto-verify and link/create the local account.
       if (account?.provider === "google" && user.email) {
         const email = user.email.toLowerCase();
@@ -108,7 +124,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (existing) {
           await prisma.user.update({
             where: { email },
-            data: { emailVerified: true, provider: "google", lastLoginAt: new Date() }
+            data: {
+              emailVerified: true,
+              provider: "google",
+              lastLoginAt: new Date(),
+            },
           });
         } else {
           await prisma.user.create({
@@ -118,8 +138,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               password: "",
               emailVerified: true,
               provider: "google",
-              lastLoginAt: new Date()
-            }
+              lastLoginAt: new Date(),
+            },
           });
         }
       }
@@ -128,7 +148,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user, trigger }) {
       if (user) {
         const dbUser = await prisma.user.findUnique({
-          where: { email: user.email! }
+          where: { email: user.email! },
         });
         if (dbUser) {
           token.uid = dbUser.id;
@@ -149,8 +169,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         (session.user as any).role = token.role as string;
       }
       return session;
-    }
-  }
+    },
+  },
 });
 
 /** Convenience: get the current session's user or null. */

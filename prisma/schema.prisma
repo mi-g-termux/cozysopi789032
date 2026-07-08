@@ -112,6 +112,14 @@ model Settings {
   paypalClientId    String  @default("")
   adminPath         String  @default("admin-panel")
   freeDeliveryAbove Float?
+  faviconUrl        String  @default("")
+  googleAuthEnabled Boolean @default(false)
+  smtpHost          String  @default("")
+  smtpPort          Int?
+  smtpUser          String  @default("")
+  smtpPassword      String  @default("")
+  smtpFrom          String  @default("")
+  smtpSecure        Boolean @default(false)
 }
 
 model UserSession {

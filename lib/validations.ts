@@ -122,4 +122,12 @@ export const settingsSchema = z.object({
   stripeSecretKey: z.string().optional(),
   paypalClientId: z.string().optional(),
   freeDeliveryAbove: z.number().min(0).nullable().optional(),
+  faviconUrl: z.string().optional(),
+  googleAuthEnabled: z.boolean().optional(),
+  smtpHost: z.string().optional(),
+  smtpPort: z.number().int().min(1).max(65535).nullable().optional(),
+  smtpUser: z.string().optional(),
+  smtpPassword: z.string().optional(),
+  smtpFrom: z.string().optional(),
+  smtpSecure: z.boolean().optional(),
 });

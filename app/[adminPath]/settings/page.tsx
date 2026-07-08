@@ -13,6 +13,14 @@ export default async function AdminSettingsPage() {
     stripeSecretKey: s.stripeSecretKey,
     paypalClientId: s.paypalClientId,
     freeDeliveryAbove: s.freeDeliveryAbove,
+    faviconUrl: s.faviconUrl,
+    googleAuthEnabled: s.googleAuthEnabled,
+    smtpHost: s.smtpHost,
+    smtpPort: s.smtpPort,
+    smtpUser: s.smtpUser,
+    smtpPassword: s.smtpPassword,
+    smtpFrom: s.smtpFrom,
+    smtpSecure: s.smtpSecure,
   };
   return <SettingsAdmin initial={initial} />;
 }
