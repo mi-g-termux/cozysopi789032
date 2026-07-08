@@ -1,0 +1,126 @@
+// Prisma schema for Cozy Appetizer Shop
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String    @id @default(cuid())
+  email               String    @unique
+  password            String
+  name                String?
+  role                String    @default("customer")
+  emailVerified       Boolean   @default(false)
+  otpCode             String?
+  otpExpiresAt        DateTime?
+  resetToken          String?   @unique
+  resetTokenExpiresAt DateTime?
+  provider            String    @default("credentials")
+  twoFactorSecret     String?
+  twoFactorEnabled    Boolean   @default(false)
+  backupCodes         String[]  @default([])
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
+  lastLoginAt         DateTime?
+  cart                Json?
+  createdAt           DateTime  @default(now())
+  orders              Order[]
+  sessions            UserSession[]
+  addresses           Address[]
+}
+
+model Address {
+  id         String  @id @default(cuid())
+  userId     String
+  label      String  @default("Home")
+  fullName   String
+  phone      String
+  street     String
+  area       String
+  city       String
+  postalCode String?
+  isDefault  Boolean @default(false)
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  description String
+  price       Float
+  images      String[]
+  category    String
+  stock       Int         @default(0)
+  featured    Boolean     @default(false)
+  active      Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  orderItems  OrderItem[]
+}
+
+model Order {
+  id             String      @id @default(cuid())
+  userId         String?
+  email          String
+  status         String      @default("pending")
+  paymentMethod  String
+  paymentStatus  String      @default("unpaid")
+  subtotal       Float
+  deliveryCharge Float       @default(0)
+  total          Float
+  deliveryArea   String
+  address        Json
+  notes          String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  items          OrderItem[]
+  user           User?       @relation(fields: [userId], references: [id])
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Float
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model DeliveryZone {
+  id            String   @id @default(cuid())
+  name          String
+  areas         String[]
+  charge        Float
+  estimatedDays String
+  active        Boolean  @default(true)
+  freeAbove     Float?
+  sortOrder     Int      @default(0)
+}
+
+model Settings {
+  id                String  @id @default("singleton")
+  storeName         String  @default("My Cozy Shop")
+  storeEmail        String  @default("")
+  currency          String  @default("USD")
+  currencySymbol    String  @default("$")
+  stripeSecretKey   String  @default("")
+  paypalClientId    String  @default("")
+  adminPath         String  @default("admin-panel")
+  freeDeliveryAbove Float?
+}
+
+model UserSession {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
