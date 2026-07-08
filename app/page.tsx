@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { SmoothScroll } from "@/components/motion/SmoothScroll";
 import { Hero } from "@/components/home/Hero";
 import { Mission } from "@/components/home/Mission";
 import { FeaturedCarousel } from "@/components/home/FeaturedCarousel";
@@ -24,12 +25,12 @@ async function getFeatured(): Promise<ProductDTO[]> {
 export default async function HomePage() {
   const featured = await getFeatured();
   return (
-    <>
+    <SmoothScroll>
       <Hero />
       <Mission />
       <FeaturedCarousel products={featured} />
       <Faq />
       <Testimonials />
-    </>
+    </SmoothScroll>
   );
 }

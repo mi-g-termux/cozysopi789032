@@ -1,12 +1,29 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { useIsMobile } from "@/hooks/use-mobile";
 
-// Flavors the hero cycles through \u2014 background color + product tub swap
-// together, exactly like the Creamy reference animation.
-const flavors = [
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger, useGSAP);
+}
+
+type Flavor = {
+  name: string;
+  tagline: string;
+  bg: string;
+  img: string;
+  sideImg: string;
+  calories: string;
+};
+
+// Each flavor drives its own background colour, main tub, side tub and copy.
+// Scrolling scrubs a pinned GSAP timeline that cross-fades between them.
+const FLAVORS: Flavor[] = [
   {
     name: "Swedish Vanilla",
     tagline:
@@ -37,22 +54,198 @@ const flavors = [
 ];
 
 export function Hero() {
-  const [i, setI] = useState(0);
+  const reduced = useReducedMotion();
+  const isMobile = useIsMobile();
+  // Pinned scroll timeline only on desktop with motion allowed.
+  const usePinned = !reduced && !isMobile;
 
+  const container = useRef<HTMLDivElement>(null);
+  const bgRef = useRef<HTMLDivElement>(null);
+  const mainRefs = useRef<Array<HTMLImageElement | null>>([]);
+  const sideRefs = useRef<Array<HTMLImageElement | null>>([]);
+  const nameRefs = useRef<Array<HTMLSpanElement | null>>([]);
+  const taglineRefs = useRef<Array<HTMLParagraphElement | null>>([]);
+  const calRefs = useRef<Array<HTMLDivElement | null>>([]);
+
+  const [active, setActive] = useState(0);
+
+  const applyActive = (idx: number) => {
+    setActive(idx);
+    if (bgRef.current) bgRef.current.style.backgroundColor = FLAVORS[idx].bg;
+    FLAVORS.forEach((_, i) => {
+      const on = i === idx;
+      gsap.set(mainRefs.current[i], {
+        opacity: on ? 1 : 0,
+        scale: on ? 1 : 0.85,
+        y: 0,
+      });
+      gsap.set(sideRefs.current[i], {
+        opacity: on ? 1 : 0,
+        scale: on ? 1 : 0.9,
+        x: 0,
+      });
+      gsap.set(nameRefs.current[i], { opacity: on ? 1 : 0 });
+      gsap.set(taglineRefs.current[i], { opacity: on ? 1 : 0 });
+      gsap.set(calRefs.current[i], { opacity: on ? 1 : 0 });
+    });
+  };
+
+  useGSAP(
+    () => {
+      const scene = container.current;
+      if (!scene) return;
+
+      // Everything after the first flavor starts hidden.
+      FLAVORS.forEach((_, i) => {
+        if (i === 0) return;
+        gsap.set(mainRefs.current[i], {
+          opacity: 0,
+          scale: 0.7,
+          y: 60,
+          force3D: true,
+        });
+        gsap.set(sideRefs.current[i], {
+          opacity: 0,
+          scale: 0.8,
+          x: 40,
+          force3D: true,
+        });
+        gsap.set(nameRefs.current[i], { opacity: 0, y: 20 });
+        gsap.set(taglineRefs.current[i], { opacity: 0, y: 20 });
+        gsap.set(calRefs.current[i], { opacity: 0, y: 20 });
+      });
+
+      if (!usePinned) {
+        applyActive(0);
+        return;
+      }
+
+      const tl = gsap.timeline({
+        defaults: { ease: "none", force3D: true },
+        scrollTrigger: {
+          trigger: scene,
+          start: "top top",
+          end: "+=2400",
+          scrub: 1,
+          pin: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+          fastScrollEnd: true,
+          onUpdate: (self) => {
+            const idx = Math.min(
+              FLAVORS.length - 1,
+              Math.floor(self.progress * FLAVORS.length),
+            );
+            setActive(idx);
+          },
+        },
+      });
+
+      for (let i = 1; i < FLAVORS.length; i++) {
+        const prev = i - 1;
+        tl.addLabel(`step-${i}`)
+          .to(
+            bgRef.current,
+            { backgroundColor: FLAVORS[i].bg, duration: 1 },
+            `step-${i}`,
+          )
+          .to(
+            mainRefs.current[prev],
+            { opacity: 0, scale: 0.6, y: -80, duration: 1 },
+            `step-${i}`,
+          )
+          .to(
+            sideRefs.current[prev],
+            { opacity: 0, scale: 0.7, x: -40, duration: 1 },
+            `step-${i}`,
+          )
+          .to(
+            nameRefs.current[prev],
+            { opacity: 0, y: -20, duration: 0.6 },
+            `step-${i}`,
+          )
+          .to(
+            taglineRefs.current[prev],
+            { opacity: 0, y: -20, duration: 0.6 },
+            `step-${i}`,
+          )
+          .to(
+            calRefs.current[prev],
+            { opacity: 0, y: -20, duration: 0.6 },
+            `step-${i}`,
+          )
+          .fromTo(
+            mainRefs.current[i],
+            { opacity: 0, scale: 0.7, y: 80 },
+            { opacity: 1, scale: 1, y: 0, duration: 1 },
+            `step-${i}`,
+          )
+          .fromTo(
+            sideRefs.current[i],
+            { opacity: 0, scale: 0.8, x: 40 },
+            { opacity: 1, scale: 1, x: 0, duration: 1 },
+            `step-${i}`,
+          )
+          .fromTo(
+            nameRefs.current[i],
+            { opacity: 0, y: 30 },
+            { opacity: 1, y: 0, duration: 0.7 },
+            `step-${i}+=0.2`,
+          )
+          .fromTo(
+            taglineRefs.current[i],
+            { opacity: 0, y: 30 },
+            { opacity: 1, y: 0, duration: 0.7 },
+            `step-${i}+=0.3`,
+          )
+          .fromTo(
+            calRefs.current[i],
+            { opacity: 0, y: 30 },
+            { opacity: 1, y: 0, duration: 0.7 },
+            `step-${i}+=0.3`,
+          );
+      }
+    },
+    { scope: container, dependencies: [usePinned] },
+  );
+
+  // Non-pinned modes (mobile / reduced motion): dots + arrow keys switch flavor.
   useEffect(() => {
-    const t = setInterval(() => setI((p) => (p + 1) % flavors.length), 3600);
-    return () => clearInterval(t);
-  }, []);
+    if (usePinned) return;
+    applyActive(active);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active, usePinned]);
 
-  const flavor = flavors[i];
+  const goTo = (i: number) => {
+    const next = ((i % FLAVORS.length) + FLAVORS.length) % FLAVORS.length;
+    setActive(next);
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      goTo(active + 1);
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      goTo(active - 1);
+    }
+  };
 
   return (
-    <section className="relative h-[100svh] min-h-[600px] w-full overflow-hidden">
-      {/* Color-cycling background */}
-      <motion.div
+    <section
+      ref={container}
+      id="top"
+      tabIndex={0}
+      onKeyDown={onKeyDown}
+      aria-roledescription="carousel"
+      aria-label="Featured ice cream flavors"
+      className="relative h-[100svh] min-h-[600px] w-full overflow-hidden outline-none"
+    >
+      {/* Colour-cycling background (driven by GSAP on scroll) */}
+      <div
+        ref={bgRef}
         className="absolute inset-0"
-        animate={{ backgroundColor: flavor.bg }}
-        transition={{ duration: 1, ease: "easeInOut" }}
+        style={{ backgroundColor: FLAVORS[0].bg }}
       />
 
       {/* Bottom wave pouring into the cream page */}
@@ -71,24 +264,24 @@ export function Hero() {
       {/* Left copy */}
       <div className="relative z-20 mx-auto flex h-full max-w-7xl flex-col justify-center px-6 md:px-12">
         <div className="max-w-xl">
-          <h1 className="font-heading text-5xl font-bold leading-[1.05] text-white drop-shadow-lg sm:text-6xl md:text-7xl">
+          <h1 className="font-heading text-5xl font-bold leading-[1.05] text-white [text-shadow:0_3px_18px_rgba(0,0,0,0.22)] sm:text-6xl md:text-7xl">
             Taste Joy in
             <br />
             Every Bite
           </h1>
-          <div className="relative mt-6 h-24" aria-live="polite">
-            <AnimatePresence mode="wait">
-              <motion.p
-                key={flavor.name}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -16 }}
-                transition={{ duration: 0.5 }}
-                className="max-w-md text-sm text-white/95 drop-shadow sm:text-base"
+          <div className="relative mt-6 h-28 sm:h-24" aria-live="polite">
+            {FLAVORS.map((f, i) => (
+              <p
+                key={`tag-${f.name}`}
+                ref={(el) => {
+                  taglineRefs.current[i] = el;
+                }}
+                aria-hidden={i !== active}
+                className="absolute inset-0 max-w-md text-base font-medium text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.28)]"
               >
-                {flavor.tagline}
-              </motion.p>
-            </AnimatePresence>
+                {f.tagline}
+              </p>
+            ))}
           </div>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
@@ -107,78 +300,88 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Center main tub + calorie badge */}
+      {/* Center main tub + calorie badge (stacked, cross-faded) */}
       <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
         <div className="relative h-[46vh] max-h-[560px] w-[46vh] max-w-[560px] sm:h-[60vh] sm:w-[60vh]">
-          <AnimatePresence mode="popLayout">
-            <motion.img
-              key={flavor.img}
-              src={flavor.img}
-              alt={`${flavor.name} ice cream tub`}
-              initial={{ opacity: 0, scale: 0.7, y: 70 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.6, y: -70 }}
-              transition={{ duration: 0.7, ease: "easeInOut" }}
+          {FLAVORS.map((f, i) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={`main-${f.name}`}
+              ref={(el) => {
+                mainRefs.current[i] = el;
+              }}
+              src={f.img}
+              alt={`${f.name} ice cream tub`}
               className="absolute inset-0 h-full w-full object-contain drop-shadow-2xl"
             />
-          </AnimatePresence>
-          <div className="absolute left-1/2 top-[62%] -translate-x-1/2">
-            <div className="rounded-full bg-white/95 px-4 py-2 text-center shadow-lg">
-              <div className="text-lg font-bold leading-none text-black">
-                {flavor.calories}
-              </div>
-              <div className="text-[9px] font-medium uppercase tracking-wider text-neutral-500">
-                calories
+          ))}
+          {FLAVORS.map((f, i) => (
+            <div
+              key={`cal-${f.name}`}
+              ref={(el) => {
+                calRefs.current[i] = el;
+              }}
+              className="absolute left-1/2 top-[62%] -translate-x-1/2"
+            >
+              <div className="rounded-full bg-white/95 px-4 py-2 text-center shadow-lg">
+                <div className="text-lg font-bold leading-none text-black">
+                  {f.calories}
+                </div>
+                <div className="text-[9px] font-medium uppercase tracking-wider text-neutral-500">
+                  calories
+                </div>
               </div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
 
       {/* Side tub (desktop only) */}
       <div className="pointer-events-none absolute right-6 top-1/2 z-10 hidden -translate-y-1/2 md:right-16 md:block">
         <div className="relative h-[28vh] max-h-[240px] w-[28vh] max-w-[240px]">
-          <AnimatePresence mode="popLayout">
-            <motion.img
-              key={flavor.sideImg}
-              src={flavor.sideImg}
+          {FLAVORS.map((f, i) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={`side-${f.name}`}
+              ref={(el) => {
+                sideRefs.current[i] = el;
+              }}
+              src={f.sideImg}
               alt=""
-              initial={{ opacity: 0, scale: 0.8, x: 40 }}
-              animate={{ opacity: 1, scale: 1, x: 0 }}
-              exit={{ opacity: 0, scale: 0.7, x: -40 }}
-              transition={{ duration: 0.7, ease: "easeInOut" }}
               className="absolute inset-0 h-full w-full object-contain drop-shadow-xl"
             />
-          </AnimatePresence>
+          ))}
         </div>
       </div>
 
-      {/* Flavor name pill */}
-      <div className="pointer-events-none absolute right-6 top-24 z-20 md:right-24">
-        <AnimatePresence mode="wait">
-          <motion.span
-            key={flavor.name}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="whitespace-nowrap rounded-full bg-white/25 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-white backdrop-blur"
+      {/* Flavor name pills */}
+      <div className="pointer-events-none absolute right-6 top-24 z-20 h-8 w-48 md:right-24">
+        {FLAVORS.map((f, i) => (
+          <span
+            key={`name-${f.name}`}
+            ref={(el) => {
+              nameRefs.current[i] = el;
+            }}
+            className="absolute right-0 top-0 whitespace-nowrap rounded-full bg-white/25 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-white backdrop-blur"
           >
-            {flavor.name}
-          </motion.span>
-        </AnimatePresence>
+            {f.name}
+          </span>
+        ))}
       </div>
 
       {/* Flavor dot pager */}
       <div className="absolute bottom-24 left-1/2 z-20 flex -translate-x-1/2 gap-2">
-        {flavors.map((f, idx) => (
+        {FLAVORS.map((f, idx) => (
           <button
-            key={f.name}
+            key={`dot-${f.name}`}
             type="button"
             aria-label={`Show ${f.name}`}
-            aria-current={idx === i}
-            onClick={() => setI(idx)}
+            aria-current={idx === active}
+            onClick={() => goTo(idx)}
             className={`h-2.5 rounded-full transition-all ${
-              idx === i ? "w-8 bg-white" : "w-2.5 bg-white/50 hover:bg-white/80"
+              idx === active
+                ? "w-8 bg-white"
+                : "w-2.5 bg-white/50 hover:bg-white/80"
             }`}
           />
         ))}
