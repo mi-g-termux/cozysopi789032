@@ -302,7 +302,7 @@ export function Hero() {
 
       {/* Center main tub + calorie badge (stacked, cross-faded) */}
       <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-        <div className="relative h-[46vh] max-h-[560px] w-[46vh] max-w-[560px] sm:h-[60vh] sm:w-[60vh]">
+        <div className="relative h-[52vh] max-h-[620px] w-[52vh] max-w-[620px] sm:h-[68vh] sm:w-[68vh]">
           {FLAVORS.map((f, i) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -337,8 +337,8 @@ export function Hero() {
       </div>
 
       {/* Side tub (desktop only) */}
-      <div className="pointer-events-none absolute right-6 top-1/2 z-10 hidden -translate-y-1/2 md:right-16 md:block">
-        <div className="relative h-[28vh] max-h-[240px] w-[28vh] max-w-[240px]">
+      <div className="pointer-events-none absolute right-2 top-1/2 z-10 hidden -translate-y-1/2 md:right-[6%] md:block">
+        <div className="relative h-[40vh] max-h-[380px] w-[40vh] max-w-[380px]">
           {FLAVORS.map((f, i) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img

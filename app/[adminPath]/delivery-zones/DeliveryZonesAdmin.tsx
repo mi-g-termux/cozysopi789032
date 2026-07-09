@@ -8,6 +8,9 @@ import type { DeliveryZoneDTO } from "@/types";
 type Draft = {
   id?: string;
   name: string;
+  country: string;
+  state: string;
+  wholeCountry: boolean;
   areasText: string;
   charge: number;
   estimatedDays: string;
@@ -17,6 +20,9 @@ type Draft = {
 
 const emptyDraft: Draft = {
   name: "",
+  country: "",
+  state: "",
+  wholeCountry: false,
   areasText: "",
   charge: 0,
   estimatedDays: "1-2 days",
@@ -44,6 +50,9 @@ export function DeliveryZonesAdmin({
     setDraft({
       id: z.id,
       name: z.name,
+      country: z.country ?? "",
+      state: z.state ?? "",
+      wholeCountry: z.wholeCountry ?? false,
       areasText: z.areas.join(", "),
       charge: z.charge,
       estimatedDays: z.estimatedDays,
@@ -54,18 +63,32 @@ export function DeliveryZonesAdmin({
 
   async function save() {
     if (!draft) return;
-    const areas = draft.areasText
+    const manualAreas = draft.areasText
       .split(",")
       .map((a) => a.trim())
       .filter(Boolean);
-    if (!draft.name || areas.length === 0) {
-      toast.error("Zone name and at least one area are required.");
+    const areas = draft.wholeCountry
+      ? [`All of ${draft.country || "the country"}`]
+      : manualAreas;
+    if (!draft.name) {
+      toast.error("Zone name is required.");
+      return;
+    }
+    if (draft.wholeCountry && !draft.country) {
+      toast.error("Enter the country for a whole-country zone.");
+      return;
+    }
+    if (!draft.wholeCountry && areas.length === 0) {
+      toast.error("Add at least one area, or enable whole-country delivery.");
       return;
     }
     setSaving(true);
     try {
       const payload = {
         name: draft.name,
+        country: draft.country,
+        state: draft.state,
+        wholeCountry: draft.wholeCountry,
         areas,
         charge: Number(draft.charge),
         estimatedDays: draft.estimatedDays,
@@ -144,7 +167,8 @@ export function DeliveryZonesAdmin({
           <thead className="bg-secondary/30 text-left">
             <tr>
               <th className="p-3">Zone</th>
-              <th className="p-3">Areas</th>
+              <th className="p-3">Country</th>
+              <th className="p-3">Coverage</th>
               <th className="p-3">Charge</th>
               <th className="p-3">Estimate</th>
               <th className="p-3">Free above</th>
@@ -163,7 +187,13 @@ export function DeliveryZonesAdmin({
                 className="cursor-move border-t border-secondary/40"
               >
                 <td className="p-3 font-medium">{z.name}</td>
-                <td className="p-3 text-ink/70">{z.areas.join(", ")}</td>
+                <td className="p-3 text-ink/70">
+                  {z.country || "\u2014"}
+                  {z.state ? `, ${z.state}` : ""}
+                </td>
+                <td className="p-3 text-ink/70">
+                  {z.wholeCountry ? "Whole country" : z.areas.join(", ")}
+                </td>
                 <td className="p-3">{formatCurrency(z.charge)}</td>
                 <td className="p-3">{z.estimatedDays}</td>
                 <td className="p-3">
@@ -210,15 +240,54 @@ export function DeliveryZonesAdmin({
                   onChange={(e) => upd({ name: e.target.value })}
                 />
               </div>
-              <div>
-                <label className="label">Areas (comma separated)</label>
-                <input
-                  className="input"
-                  placeholder="Downtown, City Square, Main Street"
-                  value={draft.areasText}
-                  onChange={(e) => upd({ areasText: e.target.value })}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="label">Country</label>
+                  <input
+                    className="input"
+                    placeholder="e.g. United States"
+                    value={draft.country}
+                    onChange={(e) => upd({ country: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="label">State / region (optional)</label>
+                  <input
+                    className="input"
+                    placeholder="e.g. California"
+                    value={draft.state}
+                    onChange={(e) => upd({ state: e.target.value })}
+                  />
+                </div>
               </div>
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={draft.wholeCountry}
+                  onChange={(e) => upd({ wholeCountry: e.target.checked })}
+                />{" "}
+                Flat delivery fee across the whole country
+              </label>
+              {!draft.wholeCountry ? (
+                <div>
+                  <label className="label">Areas (comma separated)</label>
+                  <input
+                    className="input"
+                    placeholder="Downtown, City Square, Main Street"
+                    value={draft.areasText}
+                    onChange={(e) => upd({ areasText: e.target.value })}
+                  />
+                  <p className="mt-1 text-xs text-ink/50">
+                    Customers pick one of these areas at checkout.
+                  </p>
+                </div>
+              ) : (
+                <p className="rounded-lg bg-secondary/20 p-2 text-xs text-ink/60">
+                  This fee applies to the entire country. Customers in{" "}
+                  {draft.country || "this country"} pay one flat delivery
+                  charge.
+                </p>
+              )}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="label">Delivery charge</label>

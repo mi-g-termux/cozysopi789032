@@ -1,12 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { ok, Errors } from "@/lib/api";
 import { verifyEmailSchema } from "@/lib/validations";
-import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
-  const ip = getClientIp(req);
-  if (!rateLimit(`verify:${ip}`, 10, 60_000).allowed)
-    return Errors.RATE_LIMIT();
+  const limited = enforceRateLimit(req, "verify", 10, 60_000);
+  if (limited) return limited;
 
   const body = await req.json().catch(() => null);
   const parsed = verifyEmailSchema.safeParse(body);

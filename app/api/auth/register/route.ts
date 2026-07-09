@@ -4,13 +4,12 @@ import { ok, Errors } from "@/lib/api";
 import { registerSchema } from "@/lib/validations";
 import { generateOtp } from "@/lib/utils";
 import { sendVerificationEmail } from "@/lib/mail";
-import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { enforceRateLimit } from "@/lib/rate-limit";
 import { broadcast, EVENTS } from "@/lib/pusher";
 
 export async function POST(req: Request) {
-  const ip = getClientIp(req);
-  if (!rateLimit(`register:${ip}`, 5, 60_000).allowed)
-    return Errors.RATE_LIMIT();
+  const limited = enforceRateLimit(req, "register", 5, 60_000);
+  if (limited) return limited;
 
   const body = await req.json().catch(() => null);
   const parsed = registerSchema.safeParse(body);

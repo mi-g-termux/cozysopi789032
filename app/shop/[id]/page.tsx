@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { ProductDetail } from "./ProductDetail";
+import { getSettings } from "@/lib/settings";
 import type { ProductDTO } from "@/types";
 
 export const dynamic = "force-dynamic";
@@ -19,5 +20,8 @@ export default async function ProductPage({
     product = null;
   }
   if (!product || !product.active) notFound();
-  return <ProductDetail product={product} />;
+  const settings = await getSettings();
+  return (
+    <ProductDetail product={product} reviewsEnabled={settings.reviewsEnabled} />
+  );
 }

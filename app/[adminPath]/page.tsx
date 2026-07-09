@@ -1,34 +1,53 @@
 import { prisma } from "@/lib/prisma";
 import { formatCurrency, formatDate, orderRef } from "@/lib/utils";
-import { AdminRealtime } from "@/components/admin/AdminRealtime";
+import { getSettings } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
-  const [orders, productCount, customerCount, revenueAgg, recent] =
-    await Promise.all([
-      prisma.order.count(),
-      prisma.product.count(),
-      prisma.user.count({ where: { role: "customer" } }),
-      prisma.order.aggregate({
-        _sum: { total: true },
-        where: { paymentStatus: "paid" },
-      }),
-      prisma.order.findMany({ take: 8, orderBy: { createdAt: "desc" } }),
-    ]);
+  const [
+    orders,
+    productCount,
+    customerCount,
+    revenueAgg,
+    paidItems,
+    settings,
+    recent,
+  ] = await Promise.all([
+    prisma.order.count(),
+    prisma.product.count(),
+    prisma.user.count({ where: { role: "customer" } }),
+    prisma.order.aggregate({
+      _sum: { total: true },
+      where: { paymentStatus: "paid" },
+    }),
+    prisma.orderItem.findMany({
+      where: { order: { paymentStatus: "paid" } },
+      select: { price: true, quantity: true, costPrice: true },
+    }),
+    getSettings(),
+    prisma.order.findMany({ take: 8, orderBy: { createdAt: "desc" } }),
+  ]);
+
+  const sym = settings.currencySymbol || "$";
+  const revenue = revenueAgg._sum.total ?? 0;
+  const profit = paidItems.reduce(
+    (acc, i) => acc + (i.price - i.costPrice) * i.quantity,
+    0,
+  );
 
   const cards = [
     { label: "Total orders", value: orders },
     { label: "Products", value: productCount },
     { label: "Customers", value: customerCount },
-    { label: "Revenue", value: formatCurrency(revenueAgg._sum.total ?? 0) },
+    { label: "Revenue", value: formatCurrency(revenue, sym) },
+    { label: "Total profit", value: formatCurrency(profit, sym) },
   ];
 
   return (
     <div>
-      <AdminRealtime />
       <h1 className="font-heading text-3xl">Dashboard</h1>
-      <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
         {cards.map((c) => (
           <div key={c.label} className="card p-5">
             <p className="text-sm text-ink/60">{c.label}</p>

@@ -9,9 +9,16 @@ import { useCart } from "@/store/cart";
 import { formatCurrency } from "@/lib/utils";
 import { getPusherClient } from "@/lib/pusher-client";
 import { CHANNELS, EVENTS } from "@/lib/pusher";
+import { ProductReviews } from "@/components/product/ProductReviews";
 import type { ProductDTO } from "@/types";
 
-export function ProductDetail({ product }: { product: ProductDTO }) {
+export function ProductDetail({
+  product,
+  reviewsEnabled,
+}: {
+  product: ProductDTO;
+  reviewsEnabled: boolean;
+}) {
   const [active, setActive] = useState(0);
   const [qty, setQty] = useState(1);
   const [stock, setStock] = useState(product.stock);
@@ -107,6 +114,7 @@ export function ProductDetail({ product }: { product: ProductDTO }) {
           </div>
         </div>
       </div>
+      <ProductReviews productId={product.id} reviewsEnabled={reviewsEnabled} />
     </PageTransition>
   );
 }

@@ -13,6 +13,7 @@ const emptyDraft: Draft = {
   name: "",
   description: "",
   price: 0,
+  costPrice: 0,
   category: "",
   stock: 0,
   featured: false,
@@ -55,6 +56,7 @@ export function ProductsAdmin({ initial }: { initial: ProductDTO[] }) {
           name: draft.name,
           description: draft.description,
           price: Number(draft.price),
+          costPrice: Number(draft.costPrice ?? 0),
           category: draft.category,
           stock: Number(draft.stock),
           featured: !!draft.featured,
@@ -181,14 +183,22 @@ export function ProductsAdmin({ initial }: { initial: ProductDTO[] }) {
                 value={draft.description ?? ""}
                 onChange={(e) => upd({ description: e.target.value })}
               />
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <input
                   className="input"
                   type="number"
                   step="0.01"
-                  placeholder="Price"
+                  placeholder="Selling price"
                   value={draft.price ?? 0}
                   onChange={(e) => upd({ price: Number(e.target.value) })}
+                />
+                <input
+                  className="input"
+                  type="number"
+                  step="0.01"
+                  placeholder="Cost price (for profit)"
+                  value={draft.costPrice ?? 0}
+                  onChange={(e) => upd({ costPrice: Number(e.target.value) })}
                 />
                 <input
                   className="input"

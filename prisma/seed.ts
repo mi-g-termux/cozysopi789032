@@ -17,6 +17,9 @@ async function main() {
       currencySymbol: "$",
       adminPath: "admin-panel",
       freeDeliveryAbove: 30,
+      aboutTitle: "Our story",
+      aboutBody:
+        "Creamy began with a simple idea: capture the joy of summer in every scoop. We make small-batch ice cream with the finest ingredients and real fruit, then deliver it fresh to your door.",
     },
   });
 
@@ -71,6 +74,7 @@ async function main() {
       category: "Classic",
       stock: 60,
       featured: true,
+      costPrice: 2.5,
       images: ["/creamy/tub-vanilla.png"],
     },
     {
@@ -81,6 +85,7 @@ async function main() {
       category: "Classic",
       stock: 55,
       featured: true,
+      costPrice: 2.7,
       images: ["/creamy/tub-mint.png"],
     },
     {
@@ -91,6 +96,7 @@ async function main() {
       category: "Signature",
       stock: 40,
       featured: true,
+      costPrice: 3.0,
       images: ["/creamy/tub-apple.png"],
     },
     {
@@ -101,6 +107,7 @@ async function main() {
       category: "Classic",
       stock: 50,
       featured: true,
+      costPrice: 2.7,
       images: ["/creamy/tub-strawberry.png"],
     },
     {
@@ -111,6 +118,7 @@ async function main() {
       category: "Signature",
       stock: 45,
       featured: true,
+      costPrice: 3.0,
       images: ["/creamy/tub-cookies.png"],
     },
   ];
@@ -120,6 +128,29 @@ async function main() {
   for (const p of products) {
     await prisma.product.create({ data: p });
   }
+
+  // Categories
+  const categories = [
+    { name: "Classic", slug: "classic", sortOrder: 0 },
+    { name: "Signature", slug: "signature", sortOrder: 1 },
+  ];
+  await prisma.category.deleteMany();
+  for (const c of categories) {
+    await prisma.category.create({ data: c });
+  }
+
+  // A sample welcome coupon (10% off) to demonstrate the promo-code system.
+  await prisma.coupon.upsert({
+    where: { code: "WELCOME10" },
+    update: {},
+    create: {
+      code: "WELCOME10",
+      type: "percent",
+      value: 10,
+      active: true,
+      minSubtotal: 0,
+    },
+  });
 
   console.log(
     `\u2705 Seeded ${zones.length} zones and ${products.length} products.`,

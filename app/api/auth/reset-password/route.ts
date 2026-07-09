@@ -2,11 +2,11 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { ok, Errors } from "@/lib/api";
 import { resetPasswordSchema } from "@/lib/validations";
-import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
-  const ip = getClientIp(req);
-  if (!rateLimit(`reset:${ip}`, 5, 60_000).allowed) return Errors.RATE_LIMIT();
+  const limited = enforceRateLimit(req, "reset", 5, 60_000);
+  if (limited) return limited;
 
   const body = await req.json().catch(() => null);
   const parsed = resetPasswordSchema.safeParse(body);

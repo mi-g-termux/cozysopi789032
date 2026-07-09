@@ -69,6 +69,7 @@ export const productSchema = z.object({
   name: z.string().min(2),
   description: z.string().min(2),
   price: z.number().positive("Price must be greater than 0"),
+  costPrice: z.number().min(0).optional().default(0),
   images: z.array(z.string().url()).min(1, "Add at least one image"),
   category: z.string().min(1),
   stock: z.number().int().min(0),
@@ -78,6 +79,9 @@ export const productSchema = z.object({
 
 export const deliveryZoneSchema = z.object({
   name: z.string().min(1),
+  country: z.string().optional().default(""),
+  state: z.string().optional().default(""),
+  wholeCountry: z.boolean().optional().default(false),
   areas: z.array(z.string().min(1)).min(1, "Add at least one area"),
   charge: z.number().min(0),
   estimatedDays: z.string().min(1),
@@ -112,6 +116,7 @@ export const checkoutSchema = z.object({
   }),
   notes: z.string().optional(),
   paymentMethod: z.enum(["stripe", "paypal", "cod"]),
+  couponCode: z.string().optional(),
 });
 
 export const settingsSchema = z.object({
@@ -130,4 +135,51 @@ export const settingsSchema = z.object({
   smtpPassword: z.string().optional(),
   smtpFrom: z.string().optional(),
   smtpSecure: z.boolean().optional(),
+  googleClientId: z.string().optional(),
+  googleClientSecret: z.string().optional(),
+  codEnabled: z.boolean().optional(),
+  stripeEnabled: z.boolean().optional(),
+  paypalEnabled: z.boolean().optional(),
+  paymentSandbox: z.boolean().optional(),
+  stripePublishableKey: z.string().optional(),
+  stripeWebhookSecret: z.string().optional(),
+  paypalClientSecret: z.string().optional(),
+  aboutTitle: z.string().optional(),
+  aboutBody: z.string().optional(),
+  invoicePrefix: z.string().optional(),
+  nextInvoiceNumber: z.number().int().min(1).optional(),
+  taxEnabled: z.boolean().optional(),
+  taxRate: z.number().min(0).max(100).optional(),
+  taxLabel: z.string().optional(),
+  taxInclusive: z.boolean().optional(),
+  reviewsEnabled: z.boolean().optional(),
+  reviewAutoApprove: z.boolean().optional(),
+});
+
+export const reviewSchema = z.object({
+  productId: z.string().min(1),
+  authorName: z.string().min(2, "Please enter your name").max(80),
+  rating: z.number().int().min(1).max(5),
+  comment: z.string().max(1000).optional().default(""),
+});
+
+export const couponSchema = z.object({
+  code: z
+    .string()
+    .min(2, "Enter a code")
+    .max(40)
+    .transform((s) => s.toUpperCase().trim()),
+  type: z.enum(["percent", "fixed"]),
+  value: z.number().positive("Value must be greater than 0"),
+  active: z.boolean().optional().default(true),
+  minSubtotal: z.number().min(0).optional().default(0),
+  maxUses: z.number().int().positive().nullable().optional(),
+  expiresAt: z.string().nullable().optional(),
+});
+
+export const categorySchema = z.object({
+  name: z.string().min(1),
+  description: z.string().optional().default(""),
+  sortOrder: z.number().int().optional().default(0),
+  active: z.boolean().optional().default(true),
 });

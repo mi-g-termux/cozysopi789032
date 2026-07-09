@@ -44,6 +44,14 @@ export function orderRef(id: string): string {
   return `#${id.slice(-8).toUpperCase()}`;
 }
 
+/**
+ * Format a sequential legal invoice number, e.g. formatInvoiceNumber("INV-", 123)
+ * => "INV-000123". Used for tax-compliant invoices in regulated markets.
+ */
+export function formatInvoiceNumber(prefix: string, n: number): string {
+  return `${prefix}${String(n).padStart(6, "0")}`;
+}
+
 export function cn(...classes: Array<string | false | null | undefined>): string {
   return classes.filter(Boolean).join(" ");
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
@@ -8,8 +8,20 @@ import { PageTransition } from "@/components/motion/Primitives";
 import { useCart } from "@/store/cart";
 import { formatCurrency } from "@/lib/utils";
 import type { DeliveryZoneDTO, CalculateDeliveryResult } from "@/types";
+import {
+  PaymentMethods,
+  type PayMethod,
+} from "@/components/checkout/PaymentMethods";
 
-export function CheckoutClient({ zones }: { zones: DeliveryZoneDTO[] }) {
+export function CheckoutClient({
+  zones,
+  payments,
+  tax,
+}: {
+  zones: DeliveryZoneDTO[];
+  payments: { cod: boolean; stripe: boolean; paypal: boolean };
+  tax: { enabled: boolean; rate: number; label: string; inclusive: boolean };
+}) {
   const router = useRouter();
   const { data: session } = useSession();
   const { cartItems, clearCart } = useCart();
@@ -18,9 +30,18 @@ export function CheckoutClient({ zones }: { zones: DeliveryZoneDTO[] }) {
   const [area, setArea] = useState("");
   const [calc, setCalc] = useState<CalculateDeliveryResult | null>(null);
   const [loading, setLoading] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<
-    "stripe" | "paypal" | "cod"
-  >("cod");
+  const firstEnabled: PayMethod = payments.cod
+    ? "cod"
+    : payments.stripe
+      ? "stripe"
+      : "paypal";
+  const [paymentMethod, setPaymentMethod] = useState<PayMethod>(firstEnabled);
+
+  // Keep the selection valid if the enabled methods change.
+  useEffect(() => {
+    if (!payments[paymentMethod]) setPaymentMethod(firstEnabled);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [payments]);
   const [form, setForm] = useState({
     email: session?.user?.email ?? "",
     fullName: session?.user?.name ?? "",
@@ -31,8 +52,55 @@ export function CheckoutClient({ zones }: { zones: DeliveryZoneDTO[] }) {
     notes: "",
   });
 
+  const [coupon, setCoupon] = useState("");
+  const [applied, setApplied] = useState<{
+    code: string;
+    discount: number;
+  } | null>(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+
   const deliveryCharge = calc ? (calc.isFree ? 0 : calc.charge) : 0;
-  const total = subtotal + deliveryCharge;
+  const discount = applied ? Math.min(applied.discount, subtotal) : 0;
+  const taxable = Math.max(0, subtotal - discount);
+  // Inclusive tax is already inside prices, so it is only surfaced, not added.
+  const taxAmount =
+    tax.enabled && tax.rate > 0
+      ? tax.inclusive
+        ? taxable - taxable / (1 + tax.rate / 100)
+        : taxable * (tax.rate / 100)
+      : 0;
+  const total =
+    taxable + (tax.enabled && !tax.inclusive ? taxAmount : 0) + deliveryCharge;
+
+  async function applyCoupon() {
+    const code = coupon.trim().toUpperCase();
+    if (!code) return;
+    setCouponLoading(true);
+    try {
+      const res = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, subtotal }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setApplied({ code, discount: json.data.discount });
+        toast.success(`Coupon ${code} applied!`);
+      } else {
+        setApplied(null);
+        toast.error(json.error ?? "Invalid coupon.");
+      }
+    } catch {
+      toast.error("Could not validate coupon.");
+    } finally {
+      setCouponLoading(false);
+    }
+  }
+
+  function removeCoupon() {
+    setApplied(null);
+    setCoupon("");
+  }
 
   const areaOptions = useMemo(
     () => zones.map((z) => ({ zone: z.name, areas: z.areas })),
@@ -84,6 +152,7 @@ export function CheckoutClient({ zones }: { zones: DeliveryZoneDTO[] }) {
           },
           notes: form.notes,
           paymentMethod,
+          couponCode: applied?.code,
         }),
       });
       const json = await res.json();
@@ -228,11 +297,58 @@ export function CheckoutClient({ zones }: { zones: DeliveryZoneDTO[] }) {
               </div>
             ))}
           </div>
+          <div className="mt-4">
+            <label className="label">Promo code</label>
+            {applied ? (
+              <div className="flex items-center justify-between rounded-xl bg-olive/10 px-3 py-2 text-sm">
+                <span className="font-medium text-olive">
+                  {applied.code} applied
+                </span>
+                <button
+                  onClick={removeCoupon}
+                  className="text-xs font-semibold text-ink/60 underline"
+                >
+                  Remove
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <input
+                  className="input flex-1 uppercase"
+                  placeholder="Enter code"
+                  value={coupon}
+                  onChange={(e) => setCoupon(e.target.value)}
+                />
+                <button
+                  onClick={applyCoupon}
+                  disabled={couponLoading || !coupon.trim()}
+                  className="rounded-xl bg-ink px-4 text-sm font-semibold text-white disabled:opacity-50"
+                >
+                  {couponLoading ? "..." : "Apply"}
+                </button>
+              </div>
+            )}
+          </div>
+
           <hr className="my-4 border-secondary/50" />
           <div className="flex justify-between">
             <span>Subtotal</span>
             <span>{formatCurrency(subtotal)}</span>
           </div>
+          {discount > 0 ? (
+            <div className="mt-2 flex justify-between text-olive">
+              <span>Discount ({applied?.code})</span>
+              <span>-{formatCurrency(discount)}</span>
+            </div>
+          ) : null}
+          {tax.enabled && taxAmount > 0 ? (
+            <div className="mt-2 flex justify-between">
+              <span>
+                {tax.label} ({tax.rate}%{tax.inclusive ? " incl." : ""})
+              </span>
+              <span>{formatCurrency(taxAmount)}</span>
+            </div>
+          ) : null}
           <div className="mt-2 flex justify-between">
             <span>Delivery charge</span>
             <span>{formatCurrency(deliveryCharge)}</span>
@@ -245,24 +361,11 @@ export function CheckoutClient({ zones }: { zones: DeliveryZoneDTO[] }) {
 
           <div className="mt-6">
             <label className="label">Payment method</label>
-            <div className="space-y-2">
-              {(["cod", "stripe", "paypal"] as const).map((m) => (
-                <label
-                  key={m}
-                  className="flex cursor-pointer items-center gap-3 rounded-xl border border-secondary bg-white p-3"
-                >
-                  <input
-                    type="radio"
-                    name="payment"
-                    checked={paymentMethod === m}
-                    onChange={() => setPaymentMethod(m)}
-                  />
-                  <span className="capitalize">
-                    {m === "cod" ? "Cash on delivery" : m}
-                  </span>
-                </label>
-              ))}
-            </div>
+            <PaymentMethods
+              enabled={payments}
+              value={paymentMethod}
+              onChange={setPaymentMethod}
+            />
           </div>
 
           <button

@@ -3,6 +3,7 @@ export type ProductDTO = {
   name: string;
   description: string;
   price: number;
+  costPrice: number;
   images: string[];
   category: string;
   stock: number;
@@ -13,6 +14,9 @@ export type ProductDTO = {
 export type DeliveryZoneDTO = {
   id: string;
   name: string;
+  country: string;
+  state: string;
+  wholeCountry: boolean;
   areas: string[];
   charge: number;
   estimatedDays: string;
@@ -54,11 +58,47 @@ export type OrderDTO = {
   paymentMethod: string;
   paymentStatus: string;
   subtotal: number;
+  discount: number;
+  couponCode: string | null;
+  tax: number;
   deliveryCharge: number;
   total: number;
   deliveryArea: string;
+  invoiceNumber: number | null;
+  refundStatus: string;
+  refundedAmount: number;
+  paymentRef: string | null;
   createdAt: string;
-  items: Array<{ id: string; quantity: number; price: number; product: { name: string; images: string[] } }>;
+  items: Array<{
+    id: string;
+    quantity: number;
+    price: number;
+    product: { name: string; images: string[] };
+  }>;
+};
+
+export type ReviewDTO = {
+  id: string;
+  productId: string;
+  productName: string;
+  authorName: string;
+  rating: number;
+  comment: string;
+  approved: boolean;
+  createdAt: string;
+};
+
+export type CouponDTO = {
+  id: string;
+  code: string;
+  type: string;
+  value: number;
+  active: boolean;
+  minSubtotal: number;
+  maxUses: number | null;
+  usedCount: number;
+  expiresAt: string | null;
+  createdAt: string;
 };
 
 declare module "next-auth" {

@@ -3,11 +3,11 @@ import { ok, Errors } from "@/lib/api";
 import { forgotPasswordSchema } from "@/lib/validations";
 import { generateToken } from "@/lib/utils";
 import { sendPasswordResetEmail } from "@/lib/mail";
-import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
-  const ip = getClientIp(req);
-  if (!rateLimit(`forgot:${ip}`, 5, 60_000).allowed) return Errors.RATE_LIMIT();
+  const limited = enforceRateLimit(req, "forgot", 5, 60_000);
+  if (limited) return limited;
 
   const body = await req.json().catch(() => null);
   const parsed = forgotPasswordSchema.safeParse(body);

@@ -19,6 +19,25 @@ type SettingsForm = {
   smtpPassword: string;
   smtpFrom: string;
   smtpSecure: boolean;
+  googleClientId: string;
+  googleClientSecret: string;
+  codEnabled: boolean;
+  stripeEnabled: boolean;
+  paypalEnabled: boolean;
+  paymentSandbox: boolean;
+  stripePublishableKey: string;
+  stripeWebhookSecret: string;
+  paypalClientSecret: string;
+  aboutTitle: string;
+  aboutBody: string;
+  invoicePrefix: string;
+  nextInvoiceNumber: number;
+  taxEnabled: boolean;
+  taxRate: number;
+  taxLabel: string;
+  taxInclusive: boolean;
+  reviewsEnabled: boolean;
+  reviewAutoApprove: boolean;
 };
 
 export function SettingsAdmin({ initial }: { initial: SettingsForm }) {
@@ -213,9 +232,31 @@ export function SettingsAdmin({ initial }: { initial: SettingsForm }) {
           </label>
           <p className="mt-1 text-xs text-ink/60">
             When off, the Google button is hidden on the login and sign-up pages
-            and Google sign-in is blocked server-side. Requires GOOGLE_CLIENT_ID
-            and GOOGLE_CLIENT_SECRET environment variables.
+            and Google sign-in is blocked server-side. Enter your Google OAuth
+            credentials below (or set the GOOGLE_CLIENT_ID /
+            GOOGLE_CLIENT_SECRET environment variables).
           </p>
+          <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label className="label">Google client ID</label>
+              <input
+                className="input"
+                value={form.googleClientId}
+                onChange={set("googleClientId")}
+                placeholder="xxxx.apps.googleusercontent.com"
+              />
+            </div>
+            <div>
+              <label className="label">Google client secret</label>
+              <input
+                className="input"
+                type="password"
+                value={form.googleClientSecret}
+                onChange={set("googleClientSecret")}
+                placeholder="GOCSPX-..."
+              />
+            </div>
+          </div>
         </div>
 
         <hr className="border-secondary/50" />
@@ -291,24 +332,222 @@ export function SettingsAdmin({ initial }: { initial: SettingsForm }) {
         </div>
 
         <hr className="border-secondary/50" />
-        <p className="text-sm text-ink/60">
-          Payment keys (also configurable via environment variables).
+        <p className="text-sm font-medium">Payment methods</p>
+        <p className="text-xs text-ink/60">
+          Turn each method on or off. Keep at least one on so customers can
+          check out. Use Sandbox / test mode while testing with test
+          credentials.
         </p>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <label className="flex items-center gap-2 rounded-xl border border-secondary/60 p-3 text-sm">
+            <input
+              type="checkbox"
+              checked={form.codEnabled}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, codEnabled: e.target.checked }))
+              }
+            />
+            Cash on delivery
+          </label>
+          <label className="flex items-center gap-2 rounded-xl border border-secondary/60 p-3 text-sm">
+            <input
+              type="checkbox"
+              checked={form.stripeEnabled}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, stripeEnabled: e.target.checked }))
+              }
+            />
+            Stripe (card)
+          </label>
+          <label className="flex items-center gap-2 rounded-xl border border-secondary/60 p-3 text-sm">
+            <input
+              type="checkbox"
+              checked={form.paypalEnabled}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, paypalEnabled: e.target.checked }))
+              }
+            />
+            PayPal
+          </label>
+        </div>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={form.paymentSandbox}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, paymentSandbox: e.target.checked }))
+            }
+          />
+          Sandbox / test mode (use test keys &amp; PayPal sandbox environment)
+        </label>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label className="label">Stripe secret key</label>
+            <input
+              className="input"
+              type="password"
+              value={form.stripeSecretKey}
+              onChange={set("stripeSecretKey")}
+              placeholder="sk_test_... or sk_live_..."
+            />
+          </div>
+          <div>
+            <label className="label">Stripe publishable key</label>
+            <input
+              className="input"
+              value={form.stripePublishableKey}
+              onChange={set("stripePublishableKey")}
+              placeholder="pk_test_... or pk_live_..."
+            />
+          </div>
+          <div>
+            <label className="label">Stripe webhook secret</label>
+            <input
+              className="input"
+              type="password"
+              value={form.stripeWebhookSecret}
+              onChange={set("stripeWebhookSecret")}
+              placeholder="whsec_..."
+            />
+          </div>
+          <div>
+            <label className="label">PayPal client ID</label>
+            <input
+              className="input"
+              value={form.paypalClientId}
+              onChange={set("paypalClientId")}
+            />
+          </div>
+          <div>
+            <label className="label">PayPal client secret</label>
+            <input
+              className="input"
+              type="password"
+              value={form.paypalClientSecret}
+              onChange={set("paypalClientSecret")}
+            />
+          </div>
+        </div>
+
+        <hr className="border-secondary/50" />
+        <p className="text-sm font-medium">Invoicing &amp; tax</p>
+        <p className="text-xs text-ink/60">
+          Sequential legal invoice numbers and optional tax/VAT for regulated
+          markets. The next number increments automatically on each order.
+        </p>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="label">Invoice prefix</label>
+            <input
+              className="input"
+              value={form.invoicePrefix}
+              onChange={set("invoicePrefix")}
+              placeholder="INV-"
+            />
+          </div>
+          <div>
+            <label className="label">Next invoice number</label>
+            <input
+              className="input"
+              type="number"
+              value={form.nextInvoiceNumber}
+              onChange={(e) =>
+                setForm((f) => ({
+                  ...f,
+                  nextInvoiceNumber: Number(e.target.value),
+                }))
+              }
+            />
+          </div>
+        </div>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={form.taxEnabled}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, taxEnabled: e.target.checked }))
+            }
+          />
+          Charge tax / VAT on orders
+        </label>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div>
+            <label className="label">Tax label</label>
+            <input
+              className="input"
+              value={form.taxLabel}
+              onChange={set("taxLabel")}
+              placeholder="VAT"
+            />
+          </div>
+          <div>
+            <label className="label">Tax rate (%)</label>
+            <input
+              className="input"
+              type="number"
+              step="0.01"
+              value={form.taxRate}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, taxRate: Number(e.target.value) }))
+              }
+            />
+          </div>
+          <label className="flex items-center gap-2 self-end pb-3 text-sm">
+            <input
+              type="checkbox"
+              checked={form.taxInclusive}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, taxInclusive: e.target.checked }))
+              }
+            />
+            Prices include tax
+          </label>
+        </div>
+
+        <hr className="border-secondary/50" />
+        <p className="text-sm font-medium">Product reviews</p>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={form.reviewsEnabled}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, reviewsEnabled: e.target.checked }))
+            }
+          />
+          Allow customers to submit reviews
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={form.reviewAutoApprove}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, reviewAutoApprove: e.target.checked }))
+            }
+          />
+          Auto-approve new reviews (skip moderation)
+        </label>
+
+        <hr className="border-secondary/50" />
+        <p className="text-sm font-medium">About section (home page)</p>
         <div>
-          <label className="label">Stripe secret key</label>
+          <label className="label">About title</label>
           <input
             className="input"
-            value={form.stripeSecretKey}
-            onChange={set("stripeSecretKey")}
-            placeholder="sk_..."
+            value={form.aboutTitle}
+            onChange={set("aboutTitle")}
+            placeholder="Our story"
           />
         </div>
         <div>
-          <label className="label">PayPal client ID</label>
-          <input
+          <label className="label">About text</label>
+          <textarea
             className="input"
-            value={form.paypalClientId}
-            onChange={set("paypalClientId")}
+            rows={4}
+            value={form.aboutBody}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, aboutBody: e.target.value }))
+            }
+            placeholder="Tell customers about your shop..."
           />
         </div>
         <button disabled={saving} className="btn-primary disabled:opacity-60">
