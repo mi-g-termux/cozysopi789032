@@ -177,6 +177,23 @@ export async function sendOrderInvoice(
   }
 }
 
+export async function sendContactMessage(
+  adminEmail: string,
+  msg: { name: string; email: string; subject: string; message: string },
+) {
+  const safe = (s: string) => s.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  await send(
+    adminEmail,
+    `Contact form: ${msg.subject}`,
+    wrap(
+      "New contact message",
+      `<p><strong>From:</strong> ${safe(msg.name)} (${safe(msg.email)})</p>
+       <p><strong>Subject:</strong> ${safe(msg.subject)}</p>
+       <p style="white-space:pre-wrap">${safe(msg.message)}</p>`,
+    ),
+  );
+}
+
 export async function sendOrderStatusUpdate(
   to: string,
   ref: string,

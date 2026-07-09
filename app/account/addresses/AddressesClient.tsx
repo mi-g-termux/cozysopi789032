@@ -72,7 +72,7 @@ export function AddressesClient({ initial }: { initial: AddressDTO[] }) {
               ) : null}
             </div>
             <p className="mt-2 text-sm text-ink/70">
-              {a.fullName} \u00B7 {a.phone}
+              {a.fullName} · {a.phone}
             </p>
             <p className="text-sm text-ink/70">
               {a.street}, {a.area}, {a.city} {a.postalCode}

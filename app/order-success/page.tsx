@@ -16,7 +16,7 @@ function SuccessInner() {
         transition={{ type: "spring", stiffness: 200, damping: 12 }}
         className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-olive text-4xl text-white"
       >
-        \u2713
+        ✓
       </motion.div>
       <h1 className="mt-6 font-heading text-4xl">Order confirmed!</h1>
       <p className="mt-2 text-ink/70">

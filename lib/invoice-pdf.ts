@@ -68,6 +68,18 @@ export async function invoicePdfBytes(d: InvoiceData): Promise<Uint8Array> {
     page.drawText(t, { x: right - w, y, size, font: f, color });
   };
 
+  const drawRightAt = (
+    s: string,
+    xRight: number,
+    size: number,
+    f = font,
+    color = DARK,
+  ) => {
+    const t = safe(s);
+    const w = f.widthOfTextAtSize(t, size);
+    page.drawText(t, { x: xRight - w, y, size, font: f, color });
+  };
+
   const rule = (thickness = 1, color = HAIR) =>
     page.drawLine({
       start: { x: left, y },
@@ -107,10 +119,23 @@ export async function invoicePdfBytes(d: InvoiceData): Promise<Uint8Array> {
   rule();
   y -= 22;
 
-  // Items
+  // Item table columns
+  const qtyX = right - 200;
+  const unitX = right - 100;
+
+  // Header row
+  draw("Item", left, 9, bold, MUTED);
+  draw("Qty", qtyX, 9, bold, MUTED);
+  drawRightAt("Unit price", unitX, 9, bold, MUTED);
+  drawRight("Amount", 9, bold, MUTED);
+  y -= 8;
+  rule();
+  y -= 16;
+
   for (const it of d.items) {
-    const label = `${it.name}  x ${it.quantity}`;
-    draw(fit(label, 11, right - left - 110), left, 11, font, DARK);
+    draw(fit(it.name, 11, qtyX - left - 8), left, 11, font, DARK);
+    draw(String(it.quantity), qtyX, 11, font, DARK);
+    drawRightAt(money(it.price), unitX, 11, font, DARK);
     drawRight(money(it.price * it.quantity), 11, font, DARK);
     y -= 10;
     rule(0.5, rgb(0.93, 0.93, 0.93));
@@ -158,13 +183,19 @@ export async function invoicePdfBytes(d: InvoiceData): Promise<Uint8Array> {
     }
   }
   y -= 8;
-  draw(
-    `Payment: ${d.paymentMethod} - ${d.paymentStatus}`,
-    left,
-    10,
-    font,
-    MUTED,
-  );
+  draw("Payment", left, 11, bold, DARK);
+  y -= 16;
+  const payMethod =
+    d.paymentMethod.toLowerCase() === "cod"
+      ? "Cash on delivery"
+      : d.paymentMethod.toLowerCase() === "stripe"
+        ? "Card (Stripe)"
+        : d.paymentMethod.toLowerCase() === "paypal"
+          ? "PayPal"
+          : d.paymentMethod;
+  draw(`Method: ${payMethod}`, left, 10, font, MUTED);
+  y -= 14;
+  draw(`Status: ${d.paymentStatus}`, left, 10, font, MUTED);
 
   // Footer
   page.drawText(safe(`${d.storeName} - Thank you for your order!`), {

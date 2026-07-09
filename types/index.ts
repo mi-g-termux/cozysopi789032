@@ -101,6 +101,16 @@ export type CouponDTO = {
   createdAt: string;
 };
 
+export type TestimonialDTO = {
+  id: string;
+  name: string;
+  role: string;
+  quote: string;
+  sortOrder: number;
+  active: boolean;
+  createdAt: string;
+};
+
 declare module "next-auth" {
   interface Session {
     user: {

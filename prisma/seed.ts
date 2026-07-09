@@ -139,6 +139,36 @@ async function main() {
     await prisma.category.create({ data: c });
   }
 
+  // Default testimonials for the "What people are saying" home section.
+  // These are editable/removable in Admin → Testimonials.
+  const testimonials = [
+    {
+      name: "Aisha Khan",
+      role: "Product Manager",
+      quote:
+        "Genuinely the smoothest ice cream I've had. The mint chocochip tastes like fresh leaves, not toothpaste. My whole team is hooked.",
+      sortOrder: 0,
+    },
+    {
+      name: "Marco Silva",
+      role: "Food Writer",
+      quote:
+        "Creamy nails the balance between playful branding and real quality. Swedish Vanilla is a masterclass in restraint.",
+      sortOrder: 1,
+    },
+    {
+      name: "Yuki Tanaka",
+      role: "Cafe Owner",
+      quote:
+        "We swapped to Creamy pints for our shop last quarter and re-orders doubled. Customers keep asking when the next flavor drops.",
+      sortOrder: 2,
+    },
+  ];
+  await prisma.testimonial.deleteMany();
+  for (const t of testimonials) {
+    await prisma.testimonial.create({ data: t });
+  }
+
   // A sample welcome coupon (10% off) to demonstrate the promo-code system.
   await prisma.coupon.upsert({
     where: { code: "WELCOME10" },

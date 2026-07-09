@@ -30,8 +30,6 @@ export default async function AdminSettingsPage() {
     stripePublishableKey: s.stripePublishableKey,
     stripeWebhookSecret: s.stripeWebhookSecret,
     paypalClientSecret: s.paypalClientSecret,
-    aboutTitle: s.aboutTitle,
-    aboutBody: s.aboutBody,
     invoicePrefix: s.invoicePrefix,
     nextInvoiceNumber: s.nextInvoiceNumber,
     taxEnabled: s.taxEnabled,

@@ -170,50 +170,88 @@ export function ProductsAdmin({ initial }: { initial: ProductDTO[] }) {
               </button>
             </div>
             <div className="mt-4 space-y-4">
-              <input
-                className="input"
-                placeholder="Name"
-                value={draft.name ?? ""}
-                onChange={(e) => upd({ name: e.target.value })}
-              />
-              <textarea
-                className="input"
-                placeholder="Description"
-                rows={3}
-                value={draft.description ?? ""}
-                onChange={(e) => upd({ description: e.target.value })}
-              />
-              <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="label">Product name</label>
                 <input
                   className="input"
-                  type="number"
-                  step="0.01"
-                  placeholder="Selling price"
-                  value={draft.price ?? 0}
-                  onChange={(e) => upd({ price: Number(e.target.value) })}
-                />
-                <input
-                  className="input"
-                  type="number"
-                  step="0.01"
-                  placeholder="Cost price (for profit)"
-                  value={draft.costPrice ?? 0}
-                  onChange={(e) => upd({ costPrice: Number(e.target.value) })}
-                />
-                <input
-                  className="input"
-                  placeholder="Category"
-                  value={draft.category ?? ""}
-                  onChange={(e) => upd({ category: e.target.value })}
-                />
-                <input
-                  className="input"
-                  type="number"
-                  placeholder="Stock"
-                  value={draft.stock ?? 0}
-                  onChange={(e) => upd({ stock: Number(e.target.value) })}
+                  placeholder="e.g. Swedish Vanilla"
+                  value={draft.name ?? ""}
+                  onChange={(e) => upd({ name: e.target.value })}
                 />
               </div>
+              <div>
+                <label className="label">Description</label>
+                <textarea
+                  className="input"
+                  placeholder="Short description shown on the product page"
+                  rows={3}
+                  value={draft.description ?? ""}
+                  onChange={(e) => upd({ description: e.target.value })}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="label">Selling price</label>
+                  <input
+                    className="input"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="Price the customer pays, e.g. 6.50"
+                    value={draft.price ?? 0}
+                    onChange={(e) => upd({ price: Number(e.target.value) })}
+                  />
+                </div>
+                <div>
+                  <label className="label">Cost price</label>
+                  <input
+                    className="input"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="What it costs you, e.g. 3.00"
+                    value={draft.costPrice ?? 0}
+                    onChange={(e) => upd({ costPrice: Number(e.target.value) })}
+                  />
+                </div>
+                <div>
+                  <label className="label">Category</label>
+                  <input
+                    className="input"
+                    placeholder="e.g. Classic, Signature"
+                    value={draft.category ?? ""}
+                    onChange={(e) => upd({ category: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="label">Stock (units available)</label>
+                  <input
+                    className="input"
+                    type="number"
+                    min="0"
+                    placeholder="e.g. 50"
+                    value={draft.stock ?? 0}
+                    onChange={(e) => upd({ stock: Number(e.target.value) })}
+                  />
+                </div>
+              </div>
+              <p className="rounded-lg bg-secondary/30 p-3 text-xs leading-relaxed text-ink/70">
+                <strong>How profit is calculated:</strong> Profit = Selling
+                price − Cost price, per unit sold. Your dashboard sums this
+                across all paid orders to show total profit &amp; margin.
+                {Number(draft.price) > 0 && Number(draft.costPrice) > 0 ? (
+                  <>
+                    {" "}
+                    This item earns{" "}
+                    <strong>
+                      {formatCurrency(
+                        Number(draft.price) - Number(draft.costPrice),
+                      )}
+                    </strong>{" "}
+                    profit per unit.
+                  </>
+                ) : null}
+              </p>
               <div className="flex gap-6">
                 <label className="flex items-center gap-2 text-sm">
                   <input

@@ -177,6 +177,21 @@ export const couponSchema = z.object({
   expiresAt: z.string().nullable().optional(),
 });
 
+export const contactSchema = z.object({
+  name: z.string().min(2, "Please enter your name").max(80),
+  email: z.string().email("Enter a valid email"),
+  subject: z.string().min(2, "Please enter a subject").max(120),
+  message: z.string().min(5, "Please enter a message").max(3000),
+});
+
+export const testimonialSchema = z.object({
+  name: z.string().min(1, "Enter a name").max(80),
+  role: z.string().max(120).optional().default(""),
+  quote: z.string().min(3, "Enter a quote").max(600),
+  sortOrder: z.number().int().optional().default(0),
+  active: z.boolean().optional().default(true),
+});
+
 export const categorySchema = z.object({
   name: z.string().min(1),
   description: z.string().optional().default(""),

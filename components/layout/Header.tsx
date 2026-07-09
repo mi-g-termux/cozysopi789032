@@ -9,8 +9,7 @@ import { useCart } from "@/store/cart";
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/shop", label: "Menu" },
-  { href: "/#about", label: "About" },
-  { href: "/#contact", label: "Contact" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export function Header() {
@@ -48,18 +47,6 @@ export function Header() {
               </Link>
             );
           })}
-          {user ? (
-            <Link
-              href="/account"
-              className={`rounded-full px-4 py-1.5 transition-colors ${
-                pathname.startsWith("/account")
-                  ? "bg-white text-black"
-                  : "hover:text-white"
-              }`}
-            >
-              Account
-            </Link>
-          ) : null}
         </nav>
 
         <div className="flex items-center gap-2">

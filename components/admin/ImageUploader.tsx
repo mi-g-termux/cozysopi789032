@@ -100,7 +100,7 @@ export function ImageUploader({
       >
         <p className="font-medium">Drag &amp; drop images here</p>
         <p className="text-sm text-ink/60">
-          or click to browse (JPG, PNG, WEBP, AVIF \u00B7 max 10MB)
+          or click to browse (JPG, PNG, WEBP, AVIF · max 10MB)
         </p>
         <input
           ref={inputRef}

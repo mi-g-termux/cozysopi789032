@@ -250,7 +250,7 @@ export function CheckoutClient({
               <div className="rounded-xl bg-white p-4 text-sm">
                 {calc.isFree ? (
                   <p className="font-medium text-olive">
-                    \uD83C\uDF89 Free delivery! (Orders above{" "}
+                    🎉 Free delivery! (Orders above{" "}
                     {formatCurrency(calc.freeAboveAmount ?? 0)})
                   </p>
                 ) : (
@@ -289,7 +289,7 @@ export function CheckoutClient({
                 className="flex justify-between text-sm"
               >
                 <span>
-                  {item.product.name} \u00D7 {item.quantity}
+                  {item.product.name} × {item.quantity}
                 </span>
                 <span>
                   {formatCurrency(item.product.price * item.quantity)}

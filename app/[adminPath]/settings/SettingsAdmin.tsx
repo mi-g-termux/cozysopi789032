@@ -28,8 +28,6 @@ type SettingsForm = {
   stripePublishableKey: string;
   stripeWebhookSecret: string;
   paypalClientSecret: string;
-  aboutTitle: string;
-  aboutBody: string;
   invoicePrefix: string;
   nextInvoiceNumber: number;
   taxEnabled: boolean;
@@ -228,7 +226,7 @@ export function SettingsAdmin({ initial }: { initial: SettingsForm }) {
                 setForm((f) => ({ ...f, googleAuthEnabled: e.target.checked }))
               }
             />
-            Enable \u201CSign in with Google\u201D
+            Enable “Sign in with Google”
           </label>
           <p className="mt-1 text-xs text-ink/60">
             When off, the Google button is hidden on the login and sign-up pages
@@ -261,9 +259,8 @@ export function SettingsAdmin({ initial }: { initial: SettingsForm }) {
 
         <hr className="border-secondary/50" />
         <p className="text-sm text-ink/60">
-          Email (SMTP) \u2014 used for verification codes, password resets and
-          order emails. Leave blank to fall back to the GMAIL_* environment
-          variables.
+          Email (SMTP) — used for verification codes, password resets and order
+          emails. Leave blank to fall back to the GMAIL_* environment variables.
         </p>
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -527,29 +524,6 @@ export function SettingsAdmin({ initial }: { initial: SettingsForm }) {
           Auto-approve new reviews (skip moderation)
         </label>
 
-        <hr className="border-secondary/50" />
-        <p className="text-sm font-medium">About section (home page)</p>
-        <div>
-          <label className="label">About title</label>
-          <input
-            className="input"
-            value={form.aboutTitle}
-            onChange={set("aboutTitle")}
-            placeholder="Our story"
-          />
-        </div>
-        <div>
-          <label className="label">About text</label>
-          <textarea
-            className="input"
-            rows={4}
-            value={form.aboutBody}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, aboutBody: e.target.value }))
-            }
-            placeholder="Tell customers about your shop..."
-          />
-        </div>
         <button disabled={saving} className="btn-primary disabled:opacity-60">
           {saving ? "Saving..." : "Save settings"}
         </button>

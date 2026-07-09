@@ -69,7 +69,7 @@ export default async function AccountPage() {
                 {o.items.map((it) => (
                   <div key={it.id} className="flex justify-between">
                     <span>
-                      {it.product.name} \u00D7 {it.quantity}
+                      {it.product.name} × {it.quantity}
                     </span>
                     <span>{formatCurrency(it.price * it.quantity)}</span>
                   </div>
