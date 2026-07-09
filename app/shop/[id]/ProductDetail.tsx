@@ -14,10 +14,10 @@ import type { ProductDTO } from "@/types";
 
 export function ProductDetail({
   product,
-  reviewsEnabled,
+  reviewsEnabled = true,
 }: {
   product: ProductDTO;
-  reviewsEnabled: boolean;
+  reviewsEnabled?: boolean;
 }) {
   const [active, setActive] = useState(0);
   const [qty, setQty] = useState(1);

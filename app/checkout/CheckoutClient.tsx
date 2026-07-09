@@ -16,11 +16,11 @@ import {
 export function CheckoutClient({
   zones,
   payments,
-  tax,
+  tax = { enabled: false, rate: 0, label: "VAT", inclusive: false },
 }: {
   zones: DeliveryZoneDTO[];
   payments: { cod: boolean; stripe: boolean; paypal: boolean };
-  tax: { enabled: boolean; rate: number; label: string; inclusive: boolean };
+  tax?: { enabled: boolean; rate: number; label: string; inclusive: boolean };
 }) {
   const router = useRouter();
   const { data: session } = useSession();
