@@ -25,7 +25,7 @@ export default async function AdminLayout({
 
   return (
     <div className="min-h-screen bg-cream">
-      <div className="mx-auto flex max-w-7xl gap-6 px-4 py-6">
+      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 lg:flex-row">
         <AdminSidebar base={base} storeName={settings.storeName} />
         <main className="min-w-0 flex-1">{children}</main>
       </div>

@@ -156,6 +156,34 @@ export const settingsSchema = z.object({
   reviewAutoApprove: z.boolean().optional(),
 });
 
+const heroSlideSchema = z.object({
+  name: z.string().min(1, "Flavour name is required").max(60),
+  tagline: z.string().max(300).optional().default(""),
+  bg: z.string().max(20).optional().default("#6bb6d6"),
+  img: z.string().max(500).optional().default(""),
+  sideImg: z.string().max(500).optional().default(""),
+  calories: z.string().max(20).optional().default(""),
+});
+
+const faqItemSchema = z.object({
+  q: z.string().min(1, "Question is required").max(200),
+  a: z.string().max(1000).optional().default(""),
+});
+
+export const siteContentSchema = z.object({
+  brandName: z.string().min(1, "Brand name is required").max(60),
+  heroHeading: z.string().min(1, "Hero heading is required").max(120),
+  heroSlides: z.array(heroSlideSchema).max(8).optional().default([]),
+  faqs: z.array(faqItemSchema).max(24).optional().default([]),
+  footerAddress: z.string().max(400).optional().default(""),
+  footerPhone: z.string().max(60).optional().default(""),
+  footerEmail: z.string().max(160).optional().default(""),
+  footerHours: z.string().max(400).optional().default(""),
+  socialInstagram: z.string().max(300).optional().default(""),
+  socialFacebook: z.string().max(300).optional().default(""),
+  socialTwitter: z.string().max(300).optional().default(""),
+});
+
 export const reviewSchema = z.object({
   productId: z.string().min(1),
   authorName: z.string().min(2, "Please enter your name").max(80),

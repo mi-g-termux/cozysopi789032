@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { AdminRealtime } from "@/components/admin/AdminRealtime";
 
@@ -33,8 +34,9 @@ type Item = {
 };
 
 /**
- * TailAdmin-style dark sidebar. Highlights the active route and mounts the
- * realtime listener so EVERY admin page live-refreshes on any broadcast.
+ * TailAdmin-style dark sidebar. On desktop it is a fixed left rail; on mobile
+ * it collapses into a top bar with a hamburger that opens the full menu. Also
+ * mounts the realtime listener so every admin page live-refreshes.
  */
 export function AdminSidebar({
   base,
@@ -44,6 +46,7 @@ export function AdminSidebar({
   storeName: string;
 }) {
   const pathname = usePathname();
+  const [open, setOpen] = useState(false);
 
   const nav: Item[] = [
     {
@@ -64,6 +67,14 @@ export function AdminSidebar({
       href: `${base}/categories`,
       label: "Categories",
       paths: ["M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"],
+    },
+    {
+      href: `${base}/content`,
+      label: "Site Content",
+      paths: [
+        "M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7",
+        "M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z",
+      ],
     },
     {
       href: `${base}/orders`,
@@ -131,9 +142,82 @@ export function AdminSidebar({
     },
   ];
 
+  const isActive = (n: Item) =>
+    n.exact ? pathname === n.href : pathname.startsWith(n.href);
+
+  const NavLinks = ({ onNavigate }: { onNavigate?: () => void }) => (
+    <nav className="space-y-1">
+      {nav.map((n) => {
+        const active = isActive(n);
+        return (
+          <Link
+            key={n.href}
+            href={n.href}
+            onClick={onNavigate}
+            className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors ${
+              active
+                ? "bg-accent font-medium text-white"
+                : "text-white/70 hover:bg-white/10 hover:text-white"
+            }`}
+          >
+            <Icon paths={n.paths} />
+            <span>{n.label}</span>
+          </Link>
+        );
+      })}
+      <Link
+        href="/"
+        onClick={onNavigate}
+        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+      >
+        <Icon paths={["M19 12H5", "M12 19l-7-7 7-7"]} />
+        <span>Back to store</span>
+      </Link>
+    </nav>
+  );
+
   return (
     <>
       <AdminRealtime />
+
+      {/* Mobile: top bar + collapsible menu */}
+      <div className="w-full lg:hidden">
+        <div className="flex items-center justify-between rounded-2xl bg-ink px-4 py-3 text-white shadow-soft">
+          <div className="flex items-center gap-2">
+            <span className="grid h-8 w-8 place-items-center rounded-lg bg-accent text-base">
+              🍦
+            </span>
+            <span className="truncate font-heading text-sm">{storeName}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-label="Toggle admin menu"
+            aria-expanded={open}
+            className="grid h-9 w-9 place-items-center rounded-lg bg-white/10 text-white"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path
+                d={open ? "M6 6l12 12M6 18L18 6" : "M3 6h18M3 12h18M3 18h18"}
+              />
+            </svg>
+          </button>
+        </div>
+        {open ? (
+          <div className="mt-2 rounded-2xl bg-ink p-3 text-white shadow-soft">
+            <NavLinks onNavigate={() => setOpen(false)} />
+          </div>
+        ) : null}
+      </div>
+
+      {/* Desktop: fixed sidebar */}
       <aside className="hidden w-60 shrink-0 lg:block">
         <div className="sticky top-6 rounded-3xl bg-ink p-4 text-white shadow-soft">
           <div className="flex items-center gap-3 px-2 py-3">
@@ -147,37 +231,8 @@ export function AdminSidebar({
               <p className="text-[11px] text-white/50">Admin panel</p>
             </div>
           </div>
-
-          <nav className="mt-3 space-y-1">
-            {nav.map((n) => {
-              const active = n.exact
-                ? pathname === n.href
-                : pathname.startsWith(n.href);
-              return (
-                <Link
-                  key={n.href}
-                  href={n.href}
-                  className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors ${
-                    active
-                      ? "bg-accent font-medium text-white"
-                      : "text-white/70 hover:bg-white/10 hover:text-white"
-                  }`}
-                >
-                  <Icon paths={n.paths} />
-                  <span>{n.label}</span>
-                </Link>
-              );
-            })}
-          </nav>
-
-          <div className="mt-4 border-t border-white/10 pt-3">
-            <Link
-              href="/"
-              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              <Icon paths={["M19 12H5", "M12 19l-7-7 7-7"]} />
-              <span>Back to store</span>
-            </Link>
+          <div className="mt-3">
+            <NavLinks />
           </div>
         </div>
       </aside>

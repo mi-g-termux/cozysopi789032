@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma";
+import { getSettings } from "@/lib/settings";
+import { normalizeContent } from "@/lib/site-content";
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
 import { Hero } from "@/components/home/Hero";
 import { Mission } from "@/components/home/Mission";
@@ -38,16 +40,18 @@ async function getTestimonials(): Promise<TestimonialItem[]> {
 }
 
 export default async function HomePage() {
-  const [featured, testimonials] = await Promise.all([
+  const [featured, testimonials, settings] = await Promise.all([
     getFeatured(),
     getTestimonials(),
+    getSettings(),
   ]);
+  const content = normalizeContent(settings);
   return (
     <SmoothScroll>
-      <Hero />
+      <Hero heading={content.heroHeading} slides={content.heroSlides} />
       <Mission />
       <FeaturedCarousel products={featured} />
-      <Faq />
+      <Faq items={content.faqs} />
       <Testimonials items={testimonials} />
     </SmoothScroll>
   );

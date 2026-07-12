@@ -123,7 +123,7 @@ export function SettingsAdmin({ initial }: { initial: SettingsForm }) {
     <div className="max-w-2xl">
       <h1 className="font-heading text-3xl">Store settings</h1>
       <form onSubmit={save} className="card mt-6 space-y-4 p-6">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label className="label">Store name</label>
             <input
@@ -262,7 +262,7 @@ export function SettingsAdmin({ initial }: { initial: SettingsForm }) {
           Email (SMTP) — used for verification codes, password resets and order
           emails. Leave blank to fall back to the GMAIL_* environment variables.
         </p>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label className="label">SMTP host</label>
             <input
@@ -377,52 +377,73 @@ export function SettingsAdmin({ initial }: { initial: SettingsForm }) {
           />
           Sandbox / test mode (use test keys &amp; PayPal sandbox environment)
         </label>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className="label">Stripe secret key</label>
-            <input
-              className="input"
-              type="password"
-              value={form.stripeSecretKey}
-              onChange={set("stripeSecretKey")}
-              placeholder="sk_test_... or sk_live_..."
-            />
+        <div className="space-y-4">
+          <div className="rounded-2xl border border-secondary/60 p-4">
+            <div className="mb-3 flex items-center gap-2">
+              <span className="rounded-md bg-[#635bff]/10 px-2 py-1 text-xs font-semibold text-[#635bff]">
+                Stripe
+              </span>
+              <span className="text-sm font-medium">Card payments</span>
+            </div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label className="label">Stripe secret key</label>
+                <input
+                  className="input"
+                  type="password"
+                  value={form.stripeSecretKey}
+                  onChange={set("stripeSecretKey")}
+                  placeholder="sk_test_... or sk_live_..."
+                />
+              </div>
+              <div>
+                <label className="label">Stripe publishable key</label>
+                <input
+                  className="input"
+                  value={form.stripePublishableKey}
+                  onChange={set("stripePublishableKey")}
+                  placeholder="pk_test_... or pk_live_..."
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="label">Stripe webhook secret</label>
+                <input
+                  className="input"
+                  type="password"
+                  value={form.stripeWebhookSecret}
+                  onChange={set("stripeWebhookSecret")}
+                  placeholder="whsec_..."
+                />
+              </div>
+            </div>
           </div>
-          <div>
-            <label className="label">Stripe publishable key</label>
-            <input
-              className="input"
-              value={form.stripePublishableKey}
-              onChange={set("stripePublishableKey")}
-              placeholder="pk_test_... or pk_live_..."
-            />
-          </div>
-          <div>
-            <label className="label">Stripe webhook secret</label>
-            <input
-              className="input"
-              type="password"
-              value={form.stripeWebhookSecret}
-              onChange={set("stripeWebhookSecret")}
-              placeholder="whsec_..."
-            />
-          </div>
-          <div>
-            <label className="label">PayPal client ID</label>
-            <input
-              className="input"
-              value={form.paypalClientId}
-              onChange={set("paypalClientId")}
-            />
-          </div>
-          <div>
-            <label className="label">PayPal client secret</label>
-            <input
-              className="input"
-              type="password"
-              value={form.paypalClientSecret}
-              onChange={set("paypalClientSecret")}
-            />
+
+          <div className="rounded-2xl border border-secondary/60 p-4">
+            <div className="mb-3 flex items-center gap-2">
+              <span className="rounded-md bg-[#003087]/10 px-2 py-1 text-xs font-semibold text-[#003087]">
+                PayPal
+              </span>
+              <span className="text-sm font-medium">PayPal checkout</span>
+            </div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label className="label">PayPal client ID</label>
+                <input
+                  className="input"
+                  value={form.paypalClientId}
+                  onChange={set("paypalClientId")}
+                />
+              </div>
+              <div>
+                <label className="label">PayPal client secret</label>
+                <input
+                  className="input"
+                  type="password"
+                  value={form.paypalClientSecret}
+                  onChange={set("paypalClientSecret")}
+                />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -432,7 +453,7 @@ export function SettingsAdmin({ initial }: { initial: SettingsForm }) {
           Sequential legal invoice numbers and optional tax/VAT for regulated
           markets. The next number increments automatically on each order.
         </p>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label className="label">Invoice prefix</label>
             <input

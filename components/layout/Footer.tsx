@@ -1,6 +1,26 @@
 import Link from "next/link";
 
-export function Footer() {
+export function Footer({
+  brandName = "Creamy",
+  address = "",
+  phone = "",
+  email = "",
+  hours = "",
+  instagram = "#",
+  facebook = "#",
+  twitter = "#",
+}: {
+  brandName?: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+  hours?: string;
+  instagram?: string;
+  facebook?: string;
+  twitter?: string;
+}) {
+  const addressLines = address.split("\n").filter(Boolean);
+  const hoursLines = hours.split("\n").filter(Boolean);
   return (
     <footer id="contact" className="relative bg-flavor-green text-white">
       {/* Wavy top divider */}
@@ -18,23 +38,29 @@ export function Footer() {
       </svg>
 
       <div className="mx-auto max-w-7xl px-6 pb-8 pt-16 md:px-12">
-        <h3 className="font-heading text-5xl font-bold">Creamy</h3>
+        <h3 className="font-heading text-5xl font-bold">{brandName}</h3>
 
         <div className="mt-10 grid grid-cols-2 gap-8 text-sm md:grid-cols-4">
           <div>
             <div className="mb-3 font-semibold">Address</div>
             <p className="leading-relaxed text-white/80">
-              12 Sundae Street,
-              <br />
-              Scoop District, NY 56789
+              {addressLines.map((line, i) => (
+                <span key={i}>
+                  {line}
+                  {i < addressLines.length - 1 ? <br /> : null}
+                </span>
+              ))}
             </p>
-            <p className="mt-2 text-white/80">+1 (555) 123-4567</p>
-            <p className="text-white/80">hello@creamy.shop</p>
+            {phone ? <p className="mt-2 text-white/80">{phone}</p> : null}
+            {email ? <p className="text-white/80">{email}</p> : null}
           </div>
           <div>
             <div className="mb-3 font-semibold">Opening hours</div>
-            <p className="text-white/80">Mon – Fri: 10:00 AM – 9:00 PM</p>
-            <p className="text-white/80">Sat – Sun: 9:00 AM – 11:00 PM</p>
+            {hoursLines.map((line, i) => (
+              <p key={i} className="text-white/80">
+                {line}
+              </p>
+            ))}
           </div>
           <div>
             <div className="mb-3 font-semibold">Quick links</div>
@@ -65,17 +91,32 @@ export function Footer() {
             <div className="mb-3 font-semibold">Social Media</div>
             <ul className="space-y-1 text-white/80">
               <li>
-                <a href="#" className="hover:text-white">
+                <a
+                  href={instagram}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-white"
+                >
                   Instagram
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white">
+                <a
+                  href={facebook}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-white"
+                >
                   Facebook
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white">
+                <a
+                  href={twitter}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-white"
+                >
                   Twitter
                 </a>
               </li>
@@ -84,7 +125,7 @@ export function Footer() {
         </div>
 
         <div className="mt-12 border-t border-white/20 pt-6 text-center text-xs text-white/70">
-          &copy; {new Date().getFullYear()} Creamy. All Rights Reserved.
+          &copy; {new Date().getFullYear()} {brandName}. All Rights Reserved.
         </div>
       </div>
     </footer>

@@ -23,7 +23,7 @@ type Flavor = {
 
 // Each flavor drives its own background colour, main tub, side tub and copy.
 // Scrolling scrubs a pinned GSAP timeline that cross-fades between them.
-const FLAVORS: Flavor[] = [
+const DEFAULT_FLAVORS: Flavor[] = [
   {
     name: "Swedish Vanilla",
     tagline:
@@ -53,7 +53,14 @@ const FLAVORS: Flavor[] = [
   },
 ];
 
-export function Hero() {
+export function Hero({
+  heading = "Taste Joy in Every Bite",
+  slides,
+}: {
+  heading?: string;
+  slides?: Flavor[];
+}) {
+  const FLAVORS = slides && slides.length > 0 ? slides : DEFAULT_FLAVORS;
   const reduced = useReducedMotion();
   const isMobile = useIsMobile();
   // Pinned scroll timeline only on desktop with motion allowed.
@@ -265,9 +272,7 @@ export function Hero() {
       <div className="relative z-20 mx-auto flex h-full max-w-7xl flex-col justify-start px-6 pt-24 text-center md:justify-center md:px-12 md:pt-0 md:text-left">
         <div className="mx-auto max-w-xl md:mx-0">
           <h1 className="font-heading text-4xl font-bold leading-[1.05] text-white [text-shadow:0_3px_18px_rgba(0,0,0,0.22)] sm:text-6xl md:text-7xl">
-            Taste Joy in
-            <br />
-            Every Bite
+            {heading}
           </h1>
           <div className="relative mt-6 h-28 sm:h-24" aria-live="polite">
             {FLAVORS.map((f, i) => (

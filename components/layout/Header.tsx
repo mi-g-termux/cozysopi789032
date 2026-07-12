@@ -13,7 +13,7 @@ const navLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
-export function Header() {
+export function Header({ brandName = "Creamy" }: { brandName?: string }) {
   const { data: session } = useSession();
   const pathname = usePathname();
   const itemCount = useCart((s) => s.itemCount());
@@ -29,7 +29,7 @@ export function Header() {
           href="/"
           className="font-heading text-2xl font-bold text-ink drop-shadow-sm"
         >
-          Creamy
+          {brandName}
         </Link>
 
         {/* Center black pill nav */}

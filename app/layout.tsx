@@ -7,6 +7,7 @@ import { Footer } from "@/components/layout/Footer";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { LiveRefresh } from "@/components/realtime/LiveRefresh";
 import { getSettings } from "@/lib/settings";
+import { normalizeContent } from "@/lib/site-content";
 
 // Bubbly rounded display font to match the animation reference (headings)
 const fredoka = Fredoka({
@@ -39,20 +40,35 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  let content;
+  try {
+    content = normalizeContent(await getSettings());
+  } catch {
+    content = normalizeContent(null);
+  }
   return (
     <html lang="en" className={`${fredoka.variable} ${inter.variable}`}>
       <body className="min-h-screen bg-cream text-ink antialiased">
         <Providers>
           <LiveRefresh />
-          <Header />
+          <Header brandName={content.brandName} />
           <CartDrawer />
           <main className="min-h-[70vh]">{children}</main>
-          <Footer />
+          <Footer
+            brandName={content.brandName}
+            address={content.footerAddress}
+            phone={content.footerPhone}
+            email={content.footerEmail}
+            hours={content.footerHours}
+            instagram={content.socialInstagram}
+            facebook={content.socialFacebook}
+            twitter={content.socialTwitter}
+          />
         </Providers>
       </body>
     </html>

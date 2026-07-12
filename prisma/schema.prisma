@@ -153,6 +153,17 @@ model Settings {
   taxInclusive      Boolean @default(false)
   reviewsEnabled    Boolean @default(true)
   reviewAutoApprove Boolean @default(false)
+  brandName         String  @default("Creamy")
+  heroHeading       String  @default("Taste Joy in Every Bite")
+  heroSlides        Json?
+  faqs              Json?
+  footerAddress     String  @default("")
+  footerPhone       String  @default("")
+  footerEmail       String  @default("")
+  footerHours       String  @default("")
+  socialInstagram   String  @default("")
+  socialFacebook    String  @default("")
+  socialTwitter     String  @default("")
 }
 
 model Review {

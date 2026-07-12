@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const faqs = [
+const DEFAULT_FAQS = [
   {
     q: "What makes your ice cream different?",
     a: "We use real tropical fruits, fresh dairy, and zero artificial flavours. Every batch is handcrafted in small quantities to maintain quality.",
@@ -22,7 +22,8 @@ const faqs = [
   },
 ];
 
-export function Faq() {
+export function Faq({ items }: { items?: { q: string; a: string }[] }) {
+  const faqs = items && items.length > 0 ? items : DEFAULT_FAQS;
   const [open, setOpen] = useState(0);
   return (
     <section className="bg-cream pb-24 pt-4">
