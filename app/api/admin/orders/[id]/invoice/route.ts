@@ -51,7 +51,7 @@ export async function GET(
       city: address.city ?? "",
       postalCode: address.postalCode,
     },
-    storeName: s.storeName,
+    storeName: s.brandName || s.storeName,
     storeEmail: s.storeEmail,
     currencySymbol: s.currencySymbol,
   });

@@ -22,10 +22,10 @@ export function ShopClient({
       <div className="mx-auto max-w-6xl px-4 py-16">
         <h1 className="font-heading text-4xl">The menu</h1>
         <p className="mt-2 text-ink/60">
-          Fresh appetizers and boards, made to order.
+          Handcrafted scoops &amp; pints, made fresh to order.
         </p>
 
-        <div className="my-8 flex flex-wrap gap-2">
+        <div className="relative z-20 mb-4 mt-8 flex flex-wrap gap-2">
           {tabs.map((t) => (
             <button
               key={t}
@@ -41,7 +41,9 @@ export function ShopClient({
           ))}
         </div>
 
-        <ProductGrid products={filtered} />
+        <div className="mt-16 sm:mt-20">
+          <ProductGrid products={filtered} />
+        </div>
       </div>
     </PageTransition>
   );

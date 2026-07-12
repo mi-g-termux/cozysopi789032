@@ -39,10 +39,11 @@ function StripeMark() {
   );
 }
 
+/** Cash-on-delivery: banknote icon above a tidy two-line label (never wraps). */
 function CodMark() {
   return (
-    <span className="flex items-center gap-2 text-sm font-semibold text-ink">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <span className="flex select-none flex-col items-center gap-1.5 text-ink">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden>
         <rect
           x="2"
           y="6"
@@ -54,7 +55,11 @@ function CodMark() {
         />
         <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.6" />
       </svg>
-      Cash on delivery
+      <span className="text-center text-xs font-semibold leading-tight">
+        Cash on
+        <br />
+        delivery
+      </span>
     </span>
   );
 }
@@ -63,6 +68,18 @@ const MARKS: Record<PayMethod, ReactNode> = {
   cod: <CodMark />,
   stripe: <StripeMark />,
   paypal: <PaypalMark />,
+};
+
+const LABELS: Record<PayMethod, string> = {
+  cod: "Cash on delivery",
+  stripe: "Pay by card",
+  paypal: "PayPal",
+};
+
+const COLS: Record<number, string> = {
+  1: "sm:grid-cols-1",
+  2: "sm:grid-cols-2",
+  3: "sm:grid-cols-3",
 };
 
 export function PaymentMethods({
@@ -87,7 +104,9 @@ export function PaymentMethods({
   }
 
   return (
-    <div className="grid gap-3 sm:grid-cols-3">
+    <div
+      className={`grid grid-cols-2 gap-3 ${COLS[options.length] ?? "sm:grid-cols-3"}`}
+    >
       {options.map((id) => {
         const active = value === id;
         return (
@@ -98,13 +117,20 @@ export function PaymentMethods({
             whileHover={hoverAnim}
             whileTap={tapAnim}
             aria-pressed={active}
-            className={`flex h-20 items-center justify-center rounded-2xl border-2 bg-white transition-colors ${
+            aria-label={LABELS[id]}
+            title={LABELS[id]}
+            className={`flex h-24 items-center justify-center rounded-2xl border-2 bg-white p-2 transition-colors ${
               active
                 ? "border-accent shadow-hover"
                 : "border-secondary hover:border-accent/50"
             }`}
           >
-            <motion.span {...(active ? float : {})}>{MARKS[id]}</motion.span>
+            <motion.span
+              className="flex items-center justify-center"
+              {...(active ? float : {})}
+            >
+              {MARKS[id]}
+            </motion.span>
           </motion.button>
         );
       })}

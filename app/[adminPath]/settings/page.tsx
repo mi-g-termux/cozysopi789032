@@ -8,6 +8,7 @@ export default async function AdminSettingsPage() {
   const initial = {
     storeName: s.storeName,
     storeEmail: s.storeEmail,
+    adminEmail: s.adminEmail,
     currency: s.currency,
     currencySymbol: s.currencySymbol,
     stripeSecretKey: s.stripeSecretKey,

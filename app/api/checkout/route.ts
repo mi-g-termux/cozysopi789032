@@ -184,10 +184,10 @@ export async function POST(req: Request) {
       paymentMethod,
       paymentStatus: order.paymentStatus,
       address,
-      storeName: settings.storeName,
+      storeName: settings.brandName || settings.storeName,
       storeEmail: settings.storeEmail,
       currencySymbol: settings.currencySymbol,
-      adminEmail: settings.storeEmail || undefined,
+      adminEmail: settings.adminEmail || settings.storeEmail || undefined,
     });
 
     // Online payment: create the provider session and return a redirect URL.

@@ -122,6 +122,7 @@ export const checkoutSchema = z.object({
 export const settingsSchema = z.object({
   storeName: z.string().min(1),
   storeEmail: z.string().email().or(z.literal("")),
+  adminEmail: z.string().email().or(z.literal("")).optional(),
   currency: z.string().min(1),
   currencySymbol: z.string().min(1),
   stripeSecretKey: z.string().optional(),

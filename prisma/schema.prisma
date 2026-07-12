@@ -120,6 +120,7 @@ model Settings {
   id                String  @id @default("singleton")
   storeName         String  @default("My Cozy Shop")
   storeEmail        String  @default("")
+  adminEmail        String  @default("")
   currency          String  @default("USD")
   currencySymbol    String  @default("$")
   stripeSecretKey   String  @default("")

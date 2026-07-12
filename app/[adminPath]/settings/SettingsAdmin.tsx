@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 type SettingsForm = {
   storeName: string;
   storeEmail: string;
+  adminEmail: string;
   currency: string;
   currencySymbol: string;
   stripeSecretKey: string;
@@ -136,9 +137,28 @@ export function SettingsAdmin({ initial }: { initial: SettingsForm }) {
             <label className="label">Store email</label>
             <input
               className="input"
+              type="email"
               value={form.storeEmail}
               onChange={set("storeEmail")}
+              placeholder="hello@yourshop.com"
             />
+            <p className="mt-1 text-xs text-ink/50">
+              Shown on invoices &amp; emails as your public contact address.
+            </p>
+          </div>
+          <div>
+            <label className="label">Admin notification email</label>
+            <input
+              className="input"
+              type="email"
+              value={form.adminEmail}
+              onChange={set("adminEmail")}
+              placeholder="you@gmail.com"
+            />
+            <p className="mt-1 text-xs text-ink/50">
+              Where new-order alerts &amp; contact messages are sent. Use a real
+              inbox you check. Falls back to store email if blank.
+            </p>
           </div>
           <div>
             <label className="label">Currency</label>
