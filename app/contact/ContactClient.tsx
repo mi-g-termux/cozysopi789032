@@ -1,11 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
+import { MapPin, Mail, Phone, Clock } from "lucide-react";
 import { PageTransition } from "@/components/motion/Primitives";
 
-type Info = { storeName: string; storeEmail: string };
+type Info = {
+  storeName: string;
+  storeEmail: string;
+  address: string;
+  phone: string;
+  email: string;
+  hours: string;
+  mapSrc: string;
+};
 
 // Animation objects kept as constants (avoids inline literals in JSX props).
 const formInitial = { opacity: 0, y: 20 };
@@ -17,13 +26,13 @@ function Detail({
   title,
   children,
 }: {
-  icon: string;
+  icon: ReactNode;
   title: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <div className="flex gap-4">
-      <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-accent/15 text-xl">
+      <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-accent/15 text-accent">
         {icon}
       </div>
       <div>
@@ -34,7 +43,33 @@ function Detail({
   );
 }
 
-export function ContactClient({ storeName, storeEmail }: Info) {
+/** Render multi-line text (newlines -> <br/>). */
+function Lines({ text }: { text: string }) {
+  const lines = text.split("\n").filter((l) => l.trim().length > 0);
+  return (
+    <>
+      {lines.map((line, i) => (
+        <span key={i}>
+          {line}
+          {i < lines.length - 1 ? <br /> : null}
+        </span>
+      ))}
+    </>
+  );
+}
+
+export function ContactClient({
+  storeName,
+  storeEmail,
+  address,
+  phone,
+  email,
+  hours,
+  mapSrc,
+}: Info) {
+  const contactEmail = email || storeEmail;
+  const telHref = `tel:${phone.replace(/[^+\d]/g, "")}`;
+
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -87,32 +122,29 @@ export function ContactClient({ storeName, storeEmail }: Info) {
         <div className="mt-12 grid gap-10 md:grid-cols-2">
           {/* Details */}
           <div className="space-y-6">
-            <Detail icon="📍" title="Visit us">
-              12 Sundae Street,
-              <br />
-              Scoop District, NY 56789
+            <Detail icon={<MapPin className="h-5 w-5" />} title="Visit us">
+              <Lines text={address} />
             </Detail>
-            <Detail icon="✉️" title="Email">
-              <a href={`mailto:${storeEmail}`} className="hover:text-accent">
-                {storeEmail}
+            <Detail icon={<Mail className="h-5 w-5" />} title="Email">
+              <a href={`mailto:${contactEmail}`} className="hover:text-accent">
+                {contactEmail}
               </a>
             </Detail>
-            <Detail icon="📞" title="Phone">
-              <a href="tel:+15551234567" className="hover:text-accent">
-                +1 (555) 123-4567
+            <Detail icon={<Phone className="h-5 w-5" />} title="Phone">
+              <a href={telHref} className="hover:text-accent">
+                {phone}
               </a>
             </Detail>
-            <Detail icon="🕒" title="Opening hours">
-              Mon – Fri: 10:00 AM – 9:00 PM
-              <br />
-              Sat – Sun: 9:00 AM – 11:00 PM
+            <Detail icon={<Clock className="h-5 w-5" />} title="Opening hours">
+              <Lines text={hours} />
             </Detail>
             <div className="overflow-hidden rounded-2xl border border-secondary">
               <iframe
                 title="Store location"
-                src="https://www.openstreetmap.org/export/embed.html?bbox=-74.01%2C40.70%2C-73.96%2C40.73&layer=mapnik"
+                src={mapSrc}
                 className="h-56 w-full"
                 loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
               />
             </div>
           </div>

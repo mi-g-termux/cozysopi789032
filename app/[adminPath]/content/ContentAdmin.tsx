@@ -355,9 +355,11 @@ export function ContentAdmin({ initial }: { initial: SiteContent }) {
               className="input min-h-[60px]"
               value={form.footerAddress}
               onChange={(e) => update("footerAddress", e.target.value)}
+              placeholder="12 Baker Street, London, UK"
             />
             <p className="mt-1 text-xs text-ink/50">
-              Press Enter for a new line.
+              This is your store location — it also sets the map pin on the
+              Contact page. Press Enter for a new line.
             </p>
           </div>
           <div>

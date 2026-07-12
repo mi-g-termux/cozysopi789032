@@ -24,6 +24,7 @@
     "framer-motion": "^11.3.24",
     "gsap": "^3.12.5",
     "lenis": "^1.1.14",
+    "lucide-react": "^0.400.0",
     "next": "14.2.5",
     "next-auth": "5.0.0-beta.20",
     "nodemailer": "^6.9.14",

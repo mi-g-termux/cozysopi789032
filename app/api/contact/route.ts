@@ -20,7 +20,9 @@ export async function POST(req: Request) {
   let adminEmail = "";
   try {
     const s = await getSettings();
-    adminEmail = s.smtpFrom || s.smtpUser || s.storeEmail;
+    // Prefer the dedicated admin notification inbox, then the public store
+    // email, then the SMTP account.
+    adminEmail = s.adminEmail || s.storeEmail || s.smtpUser || s.smtpFrom || "";
     if (!adminEmail) {
       const admin = await prisma.user.findFirst({
         where: { role: "admin" },
@@ -32,11 +34,13 @@ export async function POST(req: Request) {
     adminEmail = "";
   }
 
+  // Best-effort delivery: never fail the customer's submission just because
+  // email is misconfigured (bad SMTP creds, unverified address, etc.). We log
+  // the failure for the operator and still acknowledge the message.
   try {
     if (adminEmail) await sendContactMessage(adminEmail, parsed.data);
   } catch (err) {
     console.error("Failed to send contact message", err);
-    return Errors.SERVER();
   }
 
   return ok({ message: "Thanks for reaching out! We'll reply soon." });
