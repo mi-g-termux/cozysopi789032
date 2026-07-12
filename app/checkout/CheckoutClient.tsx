@@ -201,7 +201,7 @@ export function CheckoutClient({
               <label className="label">Email</label>
               <input className="input" type="email" {...field("email")} />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label className="label">Full name</label>
                 <input className="input" {...field("fullName")} />
@@ -215,7 +215,7 @@ export function CheckoutClient({
               <label className="label">Street address</label>
               <input className="input" {...field("street")} />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label className="label">City</label>
                 <input className="input" {...field("city")} />

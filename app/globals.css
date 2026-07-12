@@ -18,6 +18,14 @@ body {
   background-color: var(--cream);
   color: var(--ink);
   font-family: var(--font-inter), system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Never let media or embeds force a horizontal scroll on small screens. */
+img,
+video,
+svg {
+  max-width: 100%;
 }
 
 h1,

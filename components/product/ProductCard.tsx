@@ -18,11 +18,11 @@ export function ProductCard({ product }: { product: ProductDTO }) {
     <motion.article
       variants={staggerItem}
       whileHover={{ y: -8 }}
-      className="group relative flex h-full flex-col items-center rounded-[2rem] bg-white px-6 pb-6 pt-24 text-center shadow-md transition"
+      className="group relative flex h-full flex-col items-center rounded-[2rem] bg-white px-4 pb-6 pt-20 text-center shadow-md transition sm:px-6 sm:pt-24"
     >
       <Link
         href={`/shop/${product.id}`}
-        className="absolute -top-16 left-1/2 h-40 w-40 -translate-x-1/2"
+        className="absolute -top-12 left-1/2 h-32 w-32 -translate-x-1/2 sm:-top-16 sm:h-40 sm:w-40"
       >
         <Image
           src={product.images[0] ?? "/placeholder.png"}

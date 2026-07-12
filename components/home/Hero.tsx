@@ -262,9 +262,9 @@ export function Hero() {
       </svg>
 
       {/* Left copy */}
-      <div className="relative z-20 mx-auto flex h-full max-w-7xl flex-col justify-center px-6 md:px-12">
-        <div className="max-w-xl">
-          <h1 className="font-heading text-5xl font-bold leading-[1.05] text-white [text-shadow:0_3px_18px_rgba(0,0,0,0.22)] sm:text-6xl md:text-7xl">
+      <div className="relative z-20 mx-auto flex h-full max-w-7xl flex-col justify-start px-6 pt-24 text-center md:justify-center md:px-12 md:pt-0 md:text-left">
+        <div className="mx-auto max-w-xl md:mx-0">
+          <h1 className="font-heading text-4xl font-bold leading-[1.05] text-white [text-shadow:0_3px_18px_rgba(0,0,0,0.22)] sm:text-6xl md:text-7xl">
             Taste Joy in
             <br />
             Every Bite
@@ -277,13 +277,13 @@ export function Hero() {
                   taglineRefs.current[i] = el;
                 }}
                 aria-hidden={i !== active}
-                className="absolute inset-0 max-w-md text-base font-medium text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.28)]"
+                className="absolute inset-0 mx-auto max-w-md text-center text-base font-medium text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.28)] md:mx-0 md:text-left"
               >
                 {f.tagline}
               </p>
             ))}
           </div>
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="mt-6 flex flex-wrap justify-center gap-3 md:justify-start">
             <Link
               href="/shop"
               className="rounded-full bg-black px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:scale-105"
@@ -301,8 +301,8 @@ export function Hero() {
       </div>
 
       {/* Center main tub + calorie badge (stacked, cross-faded) */}
-      <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-        <div className="relative h-[52vh] max-h-[620px] w-[52vh] max-w-[620px] sm:h-[68vh] sm:w-[68vh]">
+      <div className="pointer-events-none absolute inset-0 z-10 flex items-end justify-center pb-14 md:items-center md:pb-0">
+        <div className="relative h-[34vh] max-h-[620px] w-[min(34vh,66vw)] max-w-[620px] sm:h-[68vh] sm:w-[min(68vh,90vw)]">
           {FLAVORS.map((f, i) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -355,7 +355,7 @@ export function Hero() {
       </div>
 
       {/* Flavor name pills */}
-      <div className="pointer-events-none absolute right-6 top-24 z-20 h-8 w-48 md:right-24">
+      <div className="pointer-events-none absolute right-4 top-20 z-20 h-8 w-48 md:right-24 md:top-24">
         {FLAVORS.map((f, i) => (
           <span
             key={`name-${f.name}`}
