@@ -1,8 +1,18 @@
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { formatCurrency, formatDate, orderRef } from "@/lib/utils";
 import { getSettings } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
+
+// An order counts toward revenue/profit once money is in: either the payment
+// gateway marked it "paid", OR it's a "delivered" order (COD cash collected).
+// Cancelled and refunded orders are excluded.
+const EARNED: Prisma.OrderWhereInput = {
+  status: { not: "cancelled" },
+  paymentStatus: { not: "refunded" },
+  OR: [{ paymentStatus: "paid" }, { status: "delivered" }],
+};
 
 export default async function AdminDashboard() {
   const [
@@ -19,10 +29,10 @@ export default async function AdminDashboard() {
     prisma.user.count({ where: { role: "customer" } }),
     prisma.order.aggregate({
       _sum: { total: true },
-      where: { paymentStatus: "paid" },
+      where: EARNED,
     }),
     prisma.orderItem.findMany({
-      where: { order: { paymentStatus: "paid" } },
+      where: { order: EARNED },
       select: { price: true, quantity: true, costPrice: true },
     }),
     getSettings(),

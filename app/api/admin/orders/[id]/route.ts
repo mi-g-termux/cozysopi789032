@@ -29,9 +29,22 @@ export async function PUT(
   });
   if (!existing) return Errors.NOT_FOUND("Order not found.");
 
+  // COD orders are collected on delivery, so marking an order "delivered"
+  // also records the payment as received (unless it was explicitly set,
+  // already paid, or refunded). This keeps revenue/profit accurate.
+  const data: { status?: string; paymentStatus?: string } = { ...parsed.data };
+  if (
+    data.status === "delivered" &&
+    data.paymentStatus === undefined &&
+    existing.paymentStatus !== "paid" &&
+    existing.paymentStatus !== "refunded"
+  ) {
+    data.paymentStatus = "paid";
+  }
+
   const order = await prisma.order.update({
     where: { id: params.id },
-    data: parsed.data,
+    data,
   });
 
   // Cancelling an order returns its items to stock exactly once.
